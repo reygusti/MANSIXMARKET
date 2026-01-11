@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MANSIX MARKET</title>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
+
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body { background-color: #f9fafb; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- CONFIG ---
+        // PENTING: Paste URL Web App Google Script Anda di dalam tanda kutip di bawah ini!
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx6oyMJASYij4ifZZegBSyfqMTTl4rQhUV-uTMus8oswlv5JrCv5lakHhQunLpRjGmvnA/exec"; 
+
+        // --- ICONS & DATA ---
+        const { ShoppingCart, Trash2, X, ChevronRight, CheckCircle, ArrowLeft, Star, Clock, Flame, Plus, Minus, User, MapPin, Calendar, MessageCircle } = lucideReact;
+        const HOLIDAYS = ["2023-12-25", "2024-01-01"];
+        const CLASSES = [
+            { grade: "Kelas X", items: Array.from({length: 7}, (_, i) => `X-${i+1}`) },
+            { grade: "Kelas XI", items: Array.from({length: 6}, (_, i) => `XI-${i+1}`) },
+            { grade: "Kelas XII", items: Array.from({length: 4}, (_, i) => `XII-${i+1}`) }
+        ];
+        const PRODUCTS = [
+            { id: 1, name: "Chicken Katsu Rice", price: 15000, category: "Siap Santap", description: "Nasi hangat dengan topping Chicken Katsu goreng crispy yang tebal dan saus spesial.", rating: 4.8, prepTime: "10 Min", calories: "450 kkal", image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&q=80&w=600" },
+            { id: 2, name: "Beef Burger Premium", price: 17000, category: "Siap Santap", description: "Burger dengan patty daging sapi asli yang juicy, sayuran segar, dan bun lembut.", rating: 4.9, prepTime: "8 Min", calories: "380 kkal", image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=600" },
+            { id: 3, name: "Ayam Lada Hitam", price: 17000, category: "Rice Bowl", description: "Potongan dada ayam empuk dimasak dengan saus blackpepper yang pedas gurih.", rating: 4.7, prepTime: "10 Min", calories: "400 kkal", image: "https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&q=80&w=600" },
+        ];
+        const formatRupiah = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
+        const generateUniqueCode = () => {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
+            let result = '';
+            for (let i = 0; i < 5; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+            return result;
+        };
+        const getNext7Days = () => {
+            const dates = [];
+            const today = new Date();
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() + i);
+                dates.push(d);
+            }
+            return dates;
+        };
+        const isDateDisabled = (date) => {
+            const day = date.getDay();
+            if (day === 0 || day === 6) return true;
+            return HOLIDAYS.includes(date.toISOString().split('T')[0]);
+        };
+
+        // --- COMPONENTS ---
+        function App() {
+            const [cart, setCart] = React.useState([]);
+            const [isCartOpen, setIsCartOpen] = React.useState(false);
+            const [view, setView] = React.useState('list');
+            const [selectedProduct, setSelectedProduct] = React.useState(null);
+            const [uniqueOrderCode, setUniqueOrderCode] = React.useState('');
+            const [customerDetails, setCustomerDetails] = React.useState({ firstName: '', phone: '', kelas: '', deliveryDate: null, deliveryTime: '' });
+            const [isLoading, setIsLoading] = React.useState(false);
+            const totalAmount = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+            const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
+
+            const addToCart = (p, qty = 1) => {
+                setCart(prev => {
+                    const ex = prev.find(i => i.id === p.id);
+                    return ex ? prev.map(i => i.id === p.id ? { ...i, quantity: i.quantity + qty } : i) : [...prev, { ...p, quantity: qty }];
+                });
+                setIsCartOpen(true); setView('list');
+            };
+            const updateCartQuantity = (id, delta) => setCart(prev => prev.map(i => i.id === id ? { ...i, quantity: Math.max(1, i.quantity + delta) } : i));
+            const removeFromCart = (id) => setCart(prev => prev.filter(i => i.id !== id));
+            
+            const handlePlaceOrder = async () => {
+                const { firstName, phone, kelas, deliveryDate, deliveryTime } = customerDetails;
+                if (!firstName || !phone || !kelas) return alert("Mohon lengkapi Nama, WA, dan Kelas.");
+                if (!deliveryDate || !deliveryTime) return alert("Mohon pilih Tanggal dan Jam pengiriman.");
+
+                setIsLoading(true);
+                const code = generateUniqueCode();
+                setUniqueOrderCode(code);
+
+                if (GOOGLE_SCRIPT_URL.startsWith("http")) {
+                    const fd = new FormData();
+                    fd.append('orderCode', code);
+                    fd.append('firstName', firstName);
+                    fd.append('kelas', kelas);
+                    fd.append('phone', phone);
+                    fd.append('deliveryDate', deliveryDate.toLocaleDateString('id-ID'));
+                    fd.append('deliveryTime', deliveryTime);
+                    fd.append('items', cart.map(i => `${i.name} (${i.quantity})`).join(", "));
+                    fd.append('totalAmount', totalAmount);
+                    try { await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: fd, mode: 'no-cors' }); } catch (e) { console.error(e); }
+                }
+
+                setTimeout(() => { setIsLoading(false); setView('success'); }, 2000);
+            };
+
+            return (
+                <div className="min-h-screen bg-gray-50 font-sans text-gray-800 max-w-md mx-auto shadow-2xl bg-white relative overflow-hidden">
+                    <nav className="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100 shadow-sm">
+                        <div className="px-4 py-3 flex justify-between items-center">
+                            <div className="font-black text-xl tracking-tighter text-orange-600 cursor-pointer" onClick={() => setView('list')}>MANSIX MARKET</div>
+                            <div className="relative cursor-pointer hover:bg-orange-50 p-2 rounded-full transition" onClick={() => setIsCartOpen(true)}>
+                                <ShoppingCart className="w-6 h-6 text-gray-800" />
+                                {totalItems > 0 && <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full animate-bounce">{totalItems}</span>}
+                            </div>
+                        </div>
+                    </nav>
+
+                    <main className="min-h-screen pb-20">
+                        {view === 'list' && <ProductList products={PRODUCTS} onProductClick={(p) => { setSelectedProduct(p); setView('detail'); window.scrollTo(0,0); }} />}
+                        {view === 'detail' && selectedProduct && <ProductDetail product={selectedProduct} onBack={() => setView('list')} onAddToCart={addToCart} />}
+                        {view === 'checkout_form' && <CheckoutForm details={customerDetails} setDetails={setCustomerDetails} onBack={() => setView('list')} onOrder={handlePlaceOrder} cartTotal={totalAmount} isLoading={isLoading} />}
+                        {view === 'success' && <SuccessScreen onReset={() => { setCart([]); setView('list'); }} orderCode={uniqueOrderCode} />}
+                    </main>
+
+                    <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} cart={cart} onRemove={removeFromCart} onUpdateQuantity={updateCartQuantity} total={totalAmount} onCheckout={() => { setIsCartOpen(false); setView('checkout_form'); }} />
+                </div>
+            );
+        }
+
+        // --- SUB COMPONENTS ---
+        function ProductList({ products, onProductClick }) {
+            return (
+                <div className="p-4">
+                    <div className="mb-6 pt-2"><h2 className="text-xl font-bold text-gray-900">Lapar?</h2><p className="text-sm text-gray-500">Pesan makanan matang, siap antar ke kelas.</p></div>
+                    <div className="space-y-5">
+                        {products.map(p => (
+                            <div key={p.id} onClick={() => onProductClick(p)} className="flex bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition cursor-pointer overflow-hidden active:scale-[0.98]">
+                                <div className="w-32 h-32 relative"><img src={p.image} className="w-full h-full object-cover" /></div>
+                                <div className="flex-1 p-3 flex flex-col justify-center">
+                                    <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-md mb-2 w-fit uppercase">{p.category}</span>
+                                    <h3 className="font-bold text-lg text-gray-800 leading-tight mb-1">{p.name}</h3>
+                                    <div className="flex justify-between items-center mt-2"><p className="font-black text-orange-600">{formatRupiah(p.price)}</p><div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-orange-600"><ChevronRight size={18} /></div></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function ProductDetail({ product, onBack, onAddToCart }) {
+            const [qty, setQty] = React.useState(1);
+            return (
+                <div className="fixed inset-0 z-50 bg-white flex flex-col max-w-md mx-auto h-[100dvh]">
+                    <div className="flex-1 overflow-y-auto pb-32 no-scrollbar">
+                        <div className="relative h-72 w-full"><img src={product.image} className="w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div><button onClick={onBack} className="absolute top-4 left-4 w-10 h-10 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white"><ArrowLeft size={20} /></button></div>
+                        <div className="p-6 -mt-8 bg-white rounded-t-3xl relative z-10">
+                            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
+                            <div className="flex justify-between items-start mb-2"><div className="flex-1 pr-4"><span className="text-green-600 font-bold text-xs uppercase bg-green-50 px-2 py-1 rounded mb-2 inline-block">{product.category}</span><h1 className="text-2xl font-bold text-gray-900 leading-tight">{product.name}</h1></div><div className="text-2xl font-black text-orange-600">{formatRupiah(product.price)}</div></div>
+                            <div className="flex gap-4 my-6 border-y border-gray-100 py-4 justify-between px-2"><div className="flex flex-col items-center gap-1 text-sm text-gray-600"><Star size={20} className="text-yellow-400 fill-yellow-400" /><span className="font-bold">{product.rating}</span></div><div className="w-px bg-gray-200"></div><div className="flex flex-col items-center gap-1 text-sm text-gray-600"><Clock size={20} className="text-blue-400" /><span>{product.prepTime}</span></div><div className="w-px bg-gray-200"></div><div className="flex flex-col items-center gap-1 text-sm text-gray-600"><Flame size={20} className="text-red-400" /><span>{product.calories}</span></div></div>
+                            <h3 className="font-bold text-gray-800 mb-2">Deskripsi Menu</h3><p className="text-gray-500 leading-relaxed mb-8 text-sm">{product.description}</p><div className="h-20"></div>
+                        </div>
+                    </div>
+                    <div className="absolute bottom-0 w-full bg-white border-t border-gray-100 p-4 shadow-lg z-20"><div className="flex gap-4"><div className="flex items-center bg-gray-100 rounded-xl px-2 gap-4"><button onClick={() => setQty(Math.max(1, qty-1))} className="w-10 h-10 flex items-center justify-center bg-white rounded-lg shadow-sm"><Minus size={18}/></button><span className="font-bold text-xl w-6 text-center">{qty}</span><button onClick={() => setQty(qty+1)} className="w-10 h-10 flex items-center justify-center bg-white rounded-lg shadow-sm"><Plus size={18}/></button></div><button onClick={() => onAddToCart(product, qty)} className="flex-1 bg-gray-900 text-white font-bold py-4 rounded-xl shadow-xl hover:bg-black transition">Tambah - {formatRupiah(product.price * qty)}</button></div></div>
+                </div>
+            );
+        }
+
+        function CheckoutForm({ details, setDetails, onBack, onOrder, cartTotal, isLoading }) {
+            const availableDates = getNext7Days();
+            const handleChange = (e) => setDetails({...details, [e.target.name]: e.target.value});
+            const handleDateSelect = (d) => !isDateDisabled(d) && setDetails({...details, deliveryDate: d});
+            return (
+                <div className="p-6 bg-white min-h-full pb-40">
+                    <div className="flex items-center gap-2 mb-8 text-gray-500 cursor-pointer w-fit" onClick={onBack}><div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><ArrowLeft size={16} /></div><span className="font-medium text-sm">Kembali</span></div>
+                    <h2 className="text-2xl font-bold mb-6 text-gray-900">Pengiriman</h2>
+                    <div className="space-y-6">
+                        <div className="space-y-4"><h3 className="text-sm font-bold border-b pb-2">1. Data Penerima</h3>
+                            <div className="relative"><input type="text" name="firstName" value={details.firstName} onChange={handleChange} className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 pl-10 focus:bg-white outline-none" placeholder="Nama Lengkap"/><User className="absolute left-3 top-3.5 text-gray-400" size={18} /></div>
+                            <div className="relative"><select name="kelas" value={details.kelas} onChange={handleChange} className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 pl-10 focus:bg-white outline-none appearance-none"><option value="">-- Pilih Kelas --</option>{CLASSES.map(g => <optgroup key={g.grade} label={g.grade}>{g.items.map(c => <option key={c} value={c}>{c}</option>)}</optgroup>)}</select><MapPin className="absolute left-3 top-3.5 text-gray-400" size={18} /></div>
+                            <input type="tel" name="phone" value={details.phone} onChange={handleChange} className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 focus:bg-white outline-none" placeholder="WhatsApp (08...)" />
+                        </div>
+                        <div className="space-y-4"><h3 className="text-sm font-bold border-b pb-2">2. Waktu Pengiriman</h3>
+                            <div className="grid grid-cols-4 gap-2">{availableDates.map((d, i) => { const dis = isDateDisabled(d); const sel = details.deliveryDate && details.deliveryDate.toDateString() === d.toDateString(); return (<button key={i} onClick={() => handleDateSelect(d)} disabled={dis} className={`flex flex-col items-center p-2 rounded-xl text-xs border ${dis ? 'bg-gray-100 text-gray-300' : sel ? 'bg-gray-900 text-white' : 'bg-white hover:border-orange-500'}`}><span className="font-bold uppercase">{d.toLocaleDateString('id-ID', { weekday: 'short' })}</span><span className="text-lg font-black">{d.getDate()}</span></button>); })}</div>
+                            <div className="flex gap-3">{['09:00', '12:00'].map(t => (<button key={t} onClick={() => setDetails({...details, deliveryTime: t})} className={`flex-1 py-3 rounded-xl font-bold border flex items-center justify-center gap-2 ${details.deliveryTime === t ? 'bg-orange-600 text-white' : 'bg-white'}`}><Clock size={16} /> {t}</button>))}</div>
+                        </div>
+                    </div>
+                    <div className="mt-8 p-4 bg-orange-50 rounded-xl border border-orange-100 flex items-start gap-3"><div className="mt-1 text-orange-600"><CheckCircle size={18} /></div><div><h4 className="font-bold text-orange-800 text-sm mb-1">Metode Pembayaran</h4><p className="text-xs text-orange-600">Hanya tersedia <strong>Bayar Ditempat (COD)</strong>.</p></div></div>
+                    <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-white border-t border-gray-100 z-10"><div className="flex justify-between items-center mb-3"><span className="text-gray-500 text-sm">Total Tagihan</span><span className="font-black text-xl text-gray-900">{formatRupiah(cartTotal)}</span></div><button onClick={onOrder} disabled={isLoading} className="w-full py-4 rounded-xl font-bold text-white bg-gray-900 hover:bg-black transition disabled:bg-gray-300">{isLoading ? 'Memproses Pesanan...' : 'Pesan Sekarang (COD)'}</button></div>
+                </div>
+            );
+        }
+
+        function SuccessScreen({ onReset, orderCode }) {
+            return (
+                <div className="flex flex-col items-center justify-center min-h-[80vh] text-center p-6 animate-in zoom-in">
+                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-6"><CheckCircle size={48} /></div><h2 className="text-3xl font-black text-gray-900 mb-2">Pesanan Diterima!</h2><p className="text-gray-500 mb-8 max-w-xs mx-auto">Pesanan akan diantar sesuai jadwal.</p>
+                    <div className="bg-orange-50 border-2 border-dashed border-orange-200 p-6 rounded-2xl w-full max-w-xs mb-8"><p className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-2">Kode Pesanan</p><div className="text-4xl font-black text-gray-800 tracking-widest font-mono">{orderCode}</div></div>
+                    <div className="w-full max-w-xs space-y-3"><button onClick={() => window.open(`https://wa.me/6289604286165?text=Halo%20Mansix%20Market,%20bantuan%20pesanan%20${orderCode}`, '_blank')} className="w-full py-4 bg-green-50 text-green-700 border border-green-200 rounded-xl font-bold flex items-center justify-center gap-2"><MessageCircle size={20} /> Butuh Bantuan?</button><button onClick={onReset} className="w-full py-4 bg-gray-900 text-white rounded-xl font-bold">Kembali ke Menu</button></div>
+                </div>
+            );
+        }
+
+        function CartSidebar({ isOpen, onClose, cart, onRemove, onUpdateQuantity, total, onCheckout }) {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 z-[60] flex justify-end">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+                    <div className="relative bg-white w-full max-w-sm h-full shadow-2xl flex flex-col">
+                        <div className="p-5 border-b flex justify-between items-center bg-white"><h2 className="text-xl font-bold flex items-center gap-2 text-gray-800">Keranjang</h2><button onClick={onClose} className="p-2 bg-gray-100 rounded-full"><X size={20} /></button></div>
+                        <div className="flex-1 overflow-y-auto p-5 space-y-5">{cart.length === 0 ? <p className="text-center text-gray-400 mt-10">Keranjang kosong.</p> : cart.map(item => (<div key={item.id} className="flex gap-4 bg-white rounded-2xl p-3 shadow-sm border border-gray-100 relative"><div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100"><img src={item.image} className="w-full h-full object-cover"/></div><div className="flex-1 flex flex-col justify-between py-1"><div><h4 className="font-bold text-sm line-clamp-1">{item.name}</h4><p className="text-orange-600 font-bold text-sm">{formatRupiah(item.price)}</p></div><div className="flex items-center gap-3 bg-gray-100 rounded-lg px-2 py-1 w-fit"><button onClick={() => item.quantity > 1 ? onUpdateQuantity(item.id, -1) : onRemove(item.id)}><Minus size={12}/></button><span className="text-xs font-bold w-3 text-center">{item.quantity}</span><button onClick={() => onUpdateQuantity(item.id, 1)}><Plus size={12}/></button></div></div><button onClick={() => onRemove(item.id)} className="absolute top-2 right-2 text-gray-300 hover:text-red-500"><Trash2 size={14} /></button></div>))}</div>
+                        {cart.length > 0 && (<div className="p-5 border-t bg-white safe-area-bottom"><div className="flex justify-between items-center mb-4"><span className="text-gray-500 text-sm">Total</span><span className="text-xl font-black text-gray-900">{formatRupiah(total)}</span></div><button onClick={onCheckout} className="w-full bg-orange-600 text-white py-4 rounded-xl font-bold hover:bg-orange-700 transition">Checkout</button></div>)}
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
