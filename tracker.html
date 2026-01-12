@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Status Pesanan - Kantin OSIS</title>
+    <style>
+        /* --- COPY STYLE DARI SEBELUMNYA (KONSISTENSI) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .nav-brand { font-weight: 700; font-size: 1.2rem; color: #0f172a; text-decoration: none; display: flex; align-items: center; gap: 8px;}
+        .nav-back { color: #64748b; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+
+        /* --- MAIN CONTENT --- */
+        .container {
+            flex: 1;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 3rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .title-box { text-align: center; margin-bottom: 2rem; }
+        .title-box h1 { font-size: 1.8rem; color: #0f172a; margin-bottom: 0.5rem; }
+        .title-box p { color: #64748b; }
+
+        /* --- SEARCH BOX --- */
+        .search-box {
+            width: 100%;
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .input-group { position: relative; margin-bottom: 1.5rem; }
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+            text-align: center;
+            letter-spacing: 1px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .input-group input:focus { border-color: #3b82f6; }
+        
+        .btn-track {
+            width: 100%;
+            padding: 14px;
+            background-color: #0f172a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-track:hover { background-color: #1e293b; }
+        .btn-track:disabled { background-color: #cbd5e1; cursor: not-allowed; }
+
+        /* --- RESULT CARD (HIDDEN BY DEFAULT) --- */
+        #result-card {
+            margin-top: 2rem;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            display: none; /* Hidden awal */
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .status-header {
+            text-align: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 1.5rem;
+        }
+        .order-id-display { font-size: 0.9rem; color: #64748b; margin-bottom: 5px; }
+        .customer-name { font-size: 1.2rem; font-weight: 700; color: #0f172a; }
+
+        /* --- STATUS TIMELINE --- */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 1rem;
+        }
+        /* Garis latar belakang */
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 33.33%;
+        }
+
+        .step-icon {
+            width: 35px;
+            height: 35px;
+            background: #e2e8f0;
+            color: #94a3b8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px auto;
+            font-weight: bold;
+            border: 3px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .step-text {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        /* Active State Classes */
+        .step.active .step-icon {
+            background: #3b82f6; /* Biru Process */
+            color: white;
+            box-shadow: 0 0 0 3px #dbeafe;
+        }
+        .step.active .step-text { color: #3b82f6; }
+
+        .step.success .step-icon {
+            background: #10b981; /* Hijau Sukses */
+            color: white;
+            box-shadow: 0 0 0 3px #d1fae5;
+        }
+        .step.success .step-text { color: #10b981; }
+
+        /* Error Message */
+        .error-msg {
+            margin-top: 1rem;
+            color: #ef4444;
+            background: #fef2f2;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        /* --- FOOTER (Sama seperti request sebelumnya) --- */
+        .footer-osis {
+            background-color: #0f172a; 
+            color: #94a3b8;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: auto;
+            width: 100%;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;     
+            border-top: 1px solid #1e293b; 
+        }
+        .footer-osis p { margin: 0; transition: color 0.3s ease; }
+        .footer-osis:hover p { color: #f8fafc; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Sederhana -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">📦 OSIS Tracker</a>
+        <a href="index.html" class="nav-back">&larr; Kembali ke Menu</a>
+    </nav>
+
+    <div class="container">
+        <div class="title-box">
+            <h1>Lacak Pesanan</h1>
+            <p>Masukkan Kode Unik yang Anda terima (misal: A123, B456).</p>
+        </div>
+
+        <div class="search-box">
+            <div class="input-group">
+                <input type="text" id="orderInput" placeholder="Masukkan Kode Unik Disini" autocomplete="off">
+            </div>
+            <button onclick="checkOrder()" id="btnCheck" class="btn-track">Cek Status</button>
+            <div id="errorMsg" class="error-msg">Kode Unik tidak ditemukan!</div>
+        </div>
+
+        <!-- TAMPILAN HASIL -->
+        <div id="result-card">
+            <div class="status-header">
+                <div class="order-id-display" id="displayId">#KODE-000</div>
+                <div class="customer-name" id="displayName">Nama Pemesan</div>
+            </div>
+
+            <div class="timeline">
+                <!-- Step 1: Diterima -->
+                <div class="step active" id="step1">
+                    <div class="step-icon">1</div>
+                    <div class="step-text">Diterima</div>
+                </div>
+                
+                <!-- Step 2: Proses -->
+                <div class="step" id="step2">
+                    <div class="step-icon">2</div>
+                    <div class="step-text">Diproses</div>
+                </div>
+
+                <!-- Step 3: Selesai -->
+                <div class="step" id="step3">
+                    <div class="step-icon">✓</div>
+                    <div class="step-text">Selesai</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: center; font-size: 0.85rem; color: #64748b;">
+                <p id="statusDescription">Pesanan sudah masuk ke sistem.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-osis">
+        <div class="footer-content">
+            <p>&copy; 2026 OSIS Komunikasi & Informasi dan Kewirausahaan</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- KONFIGURASI ---
+        // Ubah ke FALSE jika sudah punya Link Google Script Anda sendiri
+        const USE_SIMULATION_MODE = true; 
+        
+        // Masukkan Link Web App Google Script Anda di sini nanti
+        const GOOGLE_SCRIPT_URL = "GANTI_DENGAN_URL_GOOGLE_SCRIPT_ANDA"; 
+
+        // --- DATA SIMULASI (Contoh jika belum connect) ---
+        // Status diambil dari kolom NOTES: "PENDING", "PROCESS", "SUCCESS"
+        const mockDatabase = [
+            { id: "KODE-001", name: "Andi Saputra", status: "PENDING" },
+            { id: "KODE-002", name: "Budi Santoso", status: "PROCESS" },
+            { id: "KODE-003", name: "Citra Lestari", status: "SUCCESS" }
+        ];
+
+        async function checkOrder() {
+            const inputVal = document.getElementById('orderInput').value.trim(); // Case sensitive tergantung kode uniknya
+            const btn = document.getElementById('btnCheck');
+            const errorMsg = document.getElementById('errorMsg');
+            const resultCard = document.getElementById('result-card');
+
+            // Reset UI
+            errorMsg.style.display = 'none';
+            resultCard.style.display = 'none';
+            
+            if(!inputVal) return;
+
+            // Loading State
+            btn.innerHTML = "Mencari...";
+            btn.disabled = true;
+
+            try {
+                let orderData = null;
+
+                if (USE_SIMULATION_MODE) {
+                    // --- LOGIKA SIMULASI ---
+                    await new Promise(r => setTimeout(r, 800)); 
+                    // Cari Kode Unik secara case-insensitive untuk simulasi
+                    orderData = mockDatabase.find(o => o.id.toUpperCase() === inputVal.toUpperCase());
+                } else {
+                    // --- LOGIKA REAL (GOOGLE SHEETS) ---
+                    // Fetch data dari Google Script
+                    const response = await fetch(GOOGLE_SCRIPT_URL + "?action=read");
+                    const data = await response.json();
+                    
+                    // Cari berdasarkan Kode Unik (Kolom B di Spreadsheet)
+                    // Pastikan inputVal sama persis atau buat case-insensitive
+                    orderData = data.records.find(o => String(o.id).toUpperCase() === inputVal.toUpperCase());
+                }
+
+                if (orderData) {
+                    displayResult(orderData);
+                } else {
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = "Kode Unik tidak ditemukan. Cek kembali!";
+                }
+
+            } catch (error) {
+                console.error(error);
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "Gagal terhubung ke database.";
+            } finally {
+                btn.innerHTML = "Cek Status";
+                btn.disabled = false;
+            }
+        }
+
+        function displayResult(data) {
+            const card = document.getElementById('result-card');
+            
+            // Set Text Info
+            document.getElementById('displayId').innerText = "#" + data.id;
+            document.getElementById('displayName').innerText = data.name;
+
+            // Reset Steps
+            const s1 = document.getElementById('step1');
+            const s2 = document.getElementById('step2');
+            const s3 = document.getElementById('step3');
+            const desc = document.getElementById('statusDescription');
+
+            // Reset Class visual
+            [s1, s2, s3].forEach(el => {
+                el.classList.remove('active', 'success');
+                el.querySelector('.step-icon').style.background = '#e2e8f0'; 
+            });
+
+            // LOGIKA STATUS DARI KOLOM 'NOTES'
+            // Kita asumsikan isi NOTES: "PROCESS" atau "SUCCESS"
+            const status = data.status ? data.status.toUpperCase() : "";
+
+            // STEP 1: Default (Kode Ditemukan)
+            s1.classList.add('active'); 
+            desc.innerText = "Pesanan tercatat di sistem.";
+
+            // Cek keyword di dalam NOTES
+            if (status.includes('PROCESS') || status.includes('PROSES')) {
+                s1.classList.add('active'); 
+                s2.classList.add('active'); 
+                desc.innerText = "Pesanan sedang disiapkan (Process).";
+            } 
+            else if (status.includes('SUCCESS') || status.includes('SELESAI') || status.includes('DONE')) {
+                s1.classList.add('active');
+                s2.classList.add('active');
+                s3.classList.add('success'); // Hijau
+                
+                desc.innerText = "Pesanan Selesai (Success). Silakan ambil.";
+                desc.style.color = "#10b981";
+                desc.style.fontWeight = "bold";
+            }
+
+            card.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
