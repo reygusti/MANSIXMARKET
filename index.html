@@ -20,6 +20,28 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         body { background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
         html { scroll-behavior: smooth; }
+        /* Style untuk Footer */
+.footer-osis {
+    background-color: #333333; /* Warna latar belakang gelap */
+    color: #ffffff;            /* Warna teks putih */
+    text-align: center;        /* Teks rata tengah */
+    padding: 20px 0;           /* Jarak atas dan bawah */
+    margin-top: 50px;          /* Jarak dari konten di atasnya */
+    width: 100%;
+    font-family: sans-serif;   /* Font sederhana */
+    font-size: 14px;           /* Ukuran font */
+}
+
+.footer-osis p {
+    margin: 0;                 /* Menghapus margin bawaan paragraf */
+    opacity: 0.9;              /* Sedikit transparan agar tidak terlalu mencolok */
+}
+
+/* Opsional: Efek Hover */
+.footer-osis:hover p {
+    opacity: 1;
+}
+
     </style>
 </head>
 <body>
@@ -262,5 +284,11 @@
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
+    <footer class="footer-osis">
+    <div class="footer-content">
+        <p>&copy; 2026 OSIS Komunikasi & Informasi dan Kewirausahaan</p>
+    </div>
+</footer>
+
 </body>
 </html>
