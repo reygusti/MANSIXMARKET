@@ -23,38 +23,35 @@
         /* Style untuk Footer */
 
         /* Style untuk Footer Modern & Seamless */
+/* Style untuk Footer Modern (Clean & Minimalist) */
 .footer-osis {
-    /* Menggunakan gradient halus atau warna transparan agar menyatu */
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.0));
-    /* Atau gunakan background-color solid jika ingin lebih tegas: #1a1a1a */
+    /* Warna latar solid yang elegan (Dark Slate/Navy gelap) */
+    background-color: #0f172a; 
     
-    color: #f0f0f0;            /* Warna teks putih lembut (tidak terlalu kontras) */
+    color: #94a3b8;            /* Warna teks abu-abu silver (tidak putih menyilaukan) */
     text-align: center;        /* Teks rata tengah */
-    padding: 30px 0 20px 0;    /* Padding bawah lebih kecil */
-    margin-top: 50px;          
+    padding: 20px 0;           /* Padding pas, tidak terlalu tebal */
+    margin-top: 0;             /* Menghapus jarak agar tidak terlalu ke bawah */
     width: 100%;
     
     /* Tipografi Modern */
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    font-size: 0.9rem;         /* Ukuran font sedikit lebih kecil & elegan */
-    letter-spacing: 1px;       /* Jarak antar huruf agar terlihat premium */
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 13px;           /* Ukuran font ringkas */
+    font-weight: 500;
+    letter-spacing: 0.5px;     
     
-    /* Garis pemisah tipis di atas (opsional, untuk definisi area) */
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    /* Aksen border halus di atas */
+    border-top: 1px solid #1e293b; 
 }
 
 .footer-osis p {
     margin: 0;
-    font-weight: 300;          /* Font lebih tipis */
-    opacity: 0.6;              /* Transparansi agar tidak mendominasi konten utama */
-    transition: all 0.3s ease; /* Transisi halus untuk efek hover */
+    transition: color 0.3s ease;
 }
 
-/* Efek Hover Modern */
+/* Efek Hover: Teks menjadi lebih terang saat disorot */
 .footer-osis:hover p {
-    opacity: 1;                /* Menjadi jelas saat disorot */
-    transform: translateY(-2px); /* Sedikit naik ke atas */
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2); /* Efek glow tipis */
+    color: #f8fafc;            
 }
 
 
