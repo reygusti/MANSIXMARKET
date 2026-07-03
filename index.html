@@ -170,27 +170,20 @@
                 prepTime: "10 Min", 
                 calories: "450 kkal", 
                 image: "https://i.ibb.co.com/m5mPFz2b/IMG-20260703-WA0010.jpg",
-                variants: [
-                    { name: "Oreo Cheese", price: 5000 },
-                    { name: "Choco Cheese", price: 5000 }
-                ]
+                variants: ["Oreo Cheese", "Choco Cheese"]
             },
             
             { 
                 id: 2, 
                 name: "Sandwich", 
-                price: 17000, // Harga default awal di katalog
+                price: 15000, // Harga dasar (Ayam Katsu)
                 category: "Sandwich", 
-                description: "Ini dia pilihan menu sarapan yang gurih dan mengenyangkan\n\nPilihan Varian:\n• Ayam Katsu: Fillet dada ayam pilihan yang digoreng krispi dengan balutan tepung roti keemasan. Renyah di luar, tetap juicy di dalam! 🍗✨\n• Beef Patty: Daging sapi cincang premium yang dibumbui gurih dan dipanggang sempurna. Tebal, empuk, dan kaya rasa! 🥩🔥\n• Dada Ayam Lada Hitam: Potongan dada ayam empuk yang ditumis dengan saus lada hitam khas yang meresap. Perpaduan rasa manis-gurih dengan sensasi hangat yang pas! 🌶️👨‍🍳 ", 
+                description: "Ini dia pilihan menu sarapan yang gurih dan mengenyangkan\n\nPilihan Varian:\n• Ayam Katsu: Fillet dada ayam pilihan yang digoreng krispi dengan balutan tepung roti keemasan. Renyah di luar, tetap juicy di dalam! 🍗✨ (Rp15.000)\n• Beef Patty: Daging sapi cincang premium yang dibumbui gurih dan dipanggang sempurna. Tebal, empuk, dan kaya rasa! 🥩🔥 (+Rp2.000)\n• Dada Ayam Lada Hitam: Potongan dada ayam empuk yang ditumis dengan saus lada hitam khas yang meresap. Perpaduan rasa manis-gurih dengan sensasi hangat yang pas! 🌶️👨‍🍳 (+Rp2.000)", 
                 rating: 4.7, 
                 prepTime: "10 Min", 
                 calories: "400 kkal", 
                 image: "https://i.ibb.co.com/H15pyVz/IMG-20260111-WA0002.jpg",
-                variants: [
-                    { name: "Beef Patty", price: 17000 },
-                    { name: "Ayam Katsu", price: 15000 },
-                    { name: "Dada Ayam Lada Hitam", price: 17000 }
-                ]
+                variants: ["Ayam Katsu", "Beef Patty", "Dada Ayam Lada Hitam"]
             },
         ];
 
@@ -217,14 +210,14 @@
         
         const isDateDisabled = (date) => {
             const day = date.getDay();
-            if (day === 0 || day === 6) return true; // Minggu & Sabtu Libur
+            if (day === 0 || day === 6) return true; 
             return HOLIDAYS.includes(date.toISOString().split('T')[0]);
         };
 
         // --- APP UTAMA ---
         function App() {
             const [cart, setCart] = React.useState([]);
-            const [view, setView] = React.useState('list'); // 'list' | 'detail' | 'checkout_form' | 'success'
+            const [view, setView] = React.useState('list'); 
             const [selectedProduct, setSelectedProduct] = React.useState(null);
             const [uniqueOrderCode, setUniqueOrderCode] = React.useState('');
             const [customerDetails, setCustomerDetails] = React.useState({ firstName: '', phone: '', kelas: '', deliveryDate: null, deliveryTime: '09:00' });
@@ -239,7 +232,6 @@
             const totalAmount = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
             const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
 
-            // Buka halaman detail produk terdedikasi
             const handleProductClick = (product) => {
                 setSelectedProduct(product);
                 setDetailQty(1);
@@ -262,18 +254,20 @@
                 const variant = detailVariant;
                 const notes = detailNotes.trim();
                 const qty = detailQty;
-                
-                // Ambil harga dari varian yang aktif dipilih
-                const finalPrice = variant ? variant.price : selectedProduct.price;
+
+                // Logika Penambahan Harga Kustom Varian
+                let finalPrice = selectedProduct.price;
+                if (selectedProduct.name === "Sandwich" && (variant === "Beef Patty" || variant === "Dada Ayam Lada Hitam")) {
+                    finalPrice += 2000;
+                }
 
                 setCart(prev => {
-                    // cartId unik berdasarkan: id produk + nama varian + catatan tambahan
-                    const cartId = `${selectedProduct.id}-${variant ? variant.name : 'standard'}-${notes || 'none'}`;
+                    const cartId = `${selectedProduct.id}-${variant || 'standard'}-${notes || 'none'}`;
                     const ex = prev.find(i => i.cartId === cartId);
                     if (ex) {
                         return prev.map(i => i.cartId === cartId ? { ...i, quantity: i.quantity + qty } : i);
                     } else {
-                        return [...prev, { ...selectedProduct, cartId, price: finalPrice, quantity: qty, selectedVariant: variant ? variant.name : null, notes }];
+                        return [...prev, { ...selectedProduct, cartId, price: finalPrice, quantity: qty, selectedVariant: variant, notes }];
                     }
                 });
 
@@ -303,7 +297,6 @@
                 const code = generateUniqueCode();
                 setUniqueOrderCode(code);
 
-                // Kirim ke Google Sheets jika valid URL
                 if (GOOGLE_SCRIPT_URL.startsWith("http")) {
                     const fd = new FormData();
                     fd.append('orderCode', code);
@@ -320,7 +313,7 @@
                     }).join(", ");
                     
                     fd.append('items', itemsString);
-                    fd.append('totalAmount', totalAmount + 2000); // Subtotal + Biaya Layanan Rp2.000
+                    fd.append('totalAmount', totalAmount + 0); 
                     try { 
                         await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: fd, mode: 'no-cors' }); 
                     } catch (e) { 
@@ -346,7 +339,6 @@
                 <div className="flex-1 flex flex-col justify-between min-h-screen bg-white">
                     <div className="flex-1 flex flex-col">
                         
-                        {/* HEADER NAVIGATION - HANYA DI TAMPILKAN DI HALAMAN BERANDA (LIST) */}
                         {view === 'list' && (
                             <header className="bg-white sticky top-0 z-30 shadow-sm border-b animate-in fade-in duration-200">
                                 <div className="flex items-center justify-between p-4">
@@ -363,7 +355,6 @@
                             </header>
                         )}
 
-                        {/* RENDER VIEW SCREEN */}
                         <main className="flex-1 flex flex-col">
                             {view === 'list' && (
                                 <ProductListScreen 
@@ -407,7 +398,7 @@
                                     onReset={handleResetApp} 
                                     orderCode={uniqueOrderCode} 
                                     details={customerDetails}
-                                    totalPayment={totalAmount + 2000}
+                                    totalPayment={totalAmount + 0}
                                 />
                             )}
                         </main>
@@ -443,7 +434,6 @@
                         </div>
                     )}
 
-                    {/* CUSTOM ALERT POPUP MODAL */}
                     {errorMessage && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
                             <div className="bg-white rounded-3xl p-6 max-w-xs w-full shadow-2xl text-center border border-gray-100">
@@ -470,15 +460,12 @@
             const categories = ['SEMUA', ...Array.from(new Set(products.map(p => p.category)))];
             const [selectedCategory, setSelectedCategory] = React.useState('SEMUA');
 
-            // Ambil produk berfilter
             const filteredProducts = selectedCategory === 'SEMUA' 
                 ? products 
                 : products.filter(p => p.category === selectedCategory);
 
             return (
                 <div className="flex-1 flex flex-col animate-in fade-in duration-100">
-                    
-                    {/* SCROLLSPY/FILTER TABS */}
                     <div className="flex border-t border-b sticky top-[61px] z-20 bg-white no-scrollbar overflow-x-auto">
                         {categories.map(cat => {
                             const isAct = selectedCategory === cat;
@@ -500,7 +487,6 @@
                     </div>
 
                     <div className="p-4 flex-1 pb-32">
-                        /* BANNER BRANDING */
                         <div className="relative h-36 rounded-3xl bg-gradient-to-br from-orange-500 to-amber-500 overflow-hidden mb-6 flex items-center justify-center shadow-lg shadow-orange-100">
                             <div className="absolute -top-6 -right-6 opacity-10">
                                 <ShoppingBag className="w-40 h-40 text-white" />
@@ -512,7 +498,6 @@
                             </div>
                         </div>
 
-                        {/* INFO TAKE AWAY CARD */}
                         <div className="bg-orange-50 border border-orange-100 rounded-2xl p-4 mb-8 flex flex-col gap-3">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -535,7 +520,6 @@
                             </div>
                         </div>
 
-                        {/* LIST PRODUK */}
                         {selectedCategory === 'SEMUA' ? (
                             Array.from(new Set(products.map(p => p.category))).map(catName => (
                                 <section key={catName} className="mb-10">
@@ -573,7 +557,6 @@
                         )}
                     </div>
 
-                    {/* FOOTER BRANDS */}
                     <footer className="footer-osis">
                         <div className="footer-content">
                             <p>&copy; 2026 OSIS Komunikasi & Informasi dan Kewirausahaan</p>
@@ -585,19 +568,6 @@
 
         // --- CARD ROW UNTUK ITEM DI KATALOG ---
         function ProductItemRow({ product, onProductClick }) {
-            // Tampilkan rentang harga jika varian memiliki harga yang berbeda
-            const renderPrice = () => {
-                if (product.variants && product.variants.length > 0) {
-                    const prices = product.variants.map(v => v.price);
-                    const minPrice = Math.min(...prices);
-                    const maxPrice = Math.max(...prices);
-                    if (minPrice !== maxPrice) {
-                        return `${formatRupiah(minPrice)} - ${formatRupiah(maxPrice)}`;
-                    }
-                }
-                return formatRupiah(product.price);
-            };
-
             return (
                 <div 
                     onClick={() => onProductClick(product)}
@@ -618,7 +588,9 @@
                             <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed font-semibold">{product.description}</p>
                         </div>
                         <div className="flex items-center justify-between mt-1">
-                            <span className="font-extrabold text-sm text-slate-700">{renderPrice()}</span>
+                            <span className="font-extrabold text-sm text-slate-700">
+                                {product.name === "Sandwich" ? "Rp15.000 - Rp17.000" : formatRupiah(product.price)}
+                            </span>
                             <button 
                                 type="button" 
                                 className="bg-orange-50 hover:bg-orange-500 hover:text-white text-orange-500 p-1.5 rounded-xl transition-all shadow-sm flex items-center justify-center border border-orange-100"
@@ -631,20 +603,22 @@
             );
         }
 
-        // --- SCREEN: DEDICATED PRODUCT DETAIL (TANPA HEADER ATAS) ---
+        // --- SCREEN: DEDICATED PRODUCT DETAIL ---
         function ProductDetailScreen({ product, onBack, detailQty, setDetailQty, detailVariant, setDetailVariant, detailNotes, setDetailNotes, commitAddToCart }) {
-            // Dapatkan harga dari varian aktif saat ini
-            const activePrice = detailVariant ? detailVariant.price : product.price;
+            
+            // Hitung harga aktif secara langsung di antarmuka
+            let activePrice = product.price;
+            if (product.name === "Sandwich" && (detailVariant === "Beef Patty" || detailVariant === "Dada Ayam Lada Hitam")) {
+                activePrice = 17000;
+            }
 
             return (
                 <div className="flex-1 flex flex-col justify-between bg-white pb-32 animate-in slide-in-from-right duration-300">
                     <div>
-                        {/* COVER IMAGE */}
                         <div className="relative w-full h-80 overflow-hidden shadow-lg shadow-slate-100/60 rounded-b-[2.5rem]">
                             <img src={product.image} className="w-full h-full object-cover" alt={product.name} />
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-black/20"></div>
                             
-                            {/* FLOATING HEADER ACTIONS */}
                             <button 
                                 onClick={onBack} 
                                 className="absolute top-6 left-6 bg-white/30 backdrop-blur-md hover:bg-white text-white hover:text-slate-800 p-3 rounded-2xl shadow-xl transition-all active:scale-90"
@@ -653,7 +627,6 @@
                             </button>
                         </div>
 
-                        {/* CONTENT WRAPPER */}
                         <div className="px-6 pt-8 pb-4">
                             <div className="flex items-center justify-between mb-3">
                                 <span className="text-xs font-black tracking-widest text-orange-500 bg-orange-50 px-3 py-1.5 rounded-full uppercase">{product.category}</span>
@@ -666,7 +639,6 @@
                             <h2 className="text-2xl font-black leading-tight text-slate-900 mb-2">{product.name}</h2>
                             <p className="text-xl font-black text-orange-600 mb-6">{formatRupiah(activePrice)}</p>
 
-                            {/* BADGES INFO */}
                             <div className="grid grid-cols-3 gap-3 border-y border-slate-100 py-4.5 justify-between mb-8 text-center bg-slate-50/50 rounded-2xl p-2">
                                 <div className="flex flex-col items-center gap-1">
                                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Persiapan</span>
@@ -685,7 +657,7 @@
                                 </div>
                             </div>
 
-                            {/* DYNAMIC INTERACTIVE VARIANT SELECTION */}
+                            {/* PILIHAN VARIAN */}
                             {product.variants && (
                                 <div className="mb-8 border-t border-slate-100 pt-6">
                                     <div className="flex items-center justify-between mb-4">
@@ -694,11 +666,17 @@
                                     </div>
                                     <div className="grid grid-cols-1 gap-3">
                                         {product.variants.map(v => {
-                                            const isSelected = detailVariant && v.name === detailVariant.name;
+                                            const isSelected = v === detailVariant;
+                                            // Tentukan teks harga label varian
+                                            let variantLabel = "+Rp0";
+                                            if (product.name === "Sandwich" && (v === "Beef Patty" || v === "Dada Ayam Lada Hitam")) {
+                                                variantLabel = "+Rp2.000";
+                                            }
+
                                             return (
                                                 <button 
                                                     type="button"
-                                                    key={v.name}
+                                                    key={v}
                                                     onClick={() => setDetailVariant(v)}
                                                     className={`py-4 px-4 rounded-2xl text-xs font-bold border-2 transition-all duration-200 active:scale-95 flex justify-between items-center ${
                                                         isSelected 
@@ -706,9 +684,9 @@
                                                             : 'border-slate-100 bg-slate-50 text-slate-400 hover:bg-slate-100'
                                                     }`}
                                                 >
-                                                    <span>{v.name}</span>
-                                                    <span className={isSelected ? "text-orange-600 font-extrabold" : "text-slate-500 font-semibold"}>
-                                                        {formatRupiah(v.price)}
+                                                    <span>{v}</span>
+                                                    <span className={isSelected ? "text-orange-600 font-extrabold" : "text-slate-400 font-medium"}>
+                                                        {variantLabel}
                                                     </span>
                                                 </button>
                                             );
@@ -717,7 +695,6 @@
                                 </div>
                             )}
 
-                            {/* DESCRIPTION */}
                             <div className="mb-8 border-t border-slate-100 pt-6">
                                 <h3 className="font-extrabold text-xs tracking-wider uppercase text-slate-400 mb-3">Deskripsi Rasa & Menu</h3>
                                 <p className="text-xs text-slate-500 leading-relaxed font-semibold whitespace-pre-line bg-slate-50 p-4 rounded-2xl border border-slate-100/60">
@@ -725,7 +702,6 @@
                                 </p>
                             </div>
 
-                            {/* SPECIAL NOTES */}
                             <div className="mb-8 border-t border-slate-100 pt-6">
                                 <h3 className="font-extrabold text-xs tracking-wider uppercase text-slate-400 mb-3">Catatan Tambahan</h3>
                                 <textarea 
@@ -739,7 +715,6 @@
                         </div>
                     </div>
 
-                    {/* BOTTOM STICKY BAR ACTIONS */}
                     <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md p-6 border-t border-slate-100 flex items-center justify-between gap-4 z-20 shadow-[0_-5px_15px_rgba(0,0,0,0.03)]">
                         <div className="flex items-center bg-slate-100 rounded-2xl p-1.5 border border-slate-200">
                             <button onClick={() => setDetailQty(Math.max(1, detailQty - 1))} className="p-2 text-slate-400 hover:text-slate-800 transition-colors">
@@ -761,12 +736,11 @@
             );
         }
 
-        // --- SCREEN: REVIEW ORDER & CHECKOUT (TANPA HEADER ATAS) ---
+        // --- SCREEN: REVIEW ORDER & CHECKOUT ---
         function CheckoutScreen({ cart, details, setDetails, onBack, onRemove, onUpdateQuantity, onOrder, subtotal, isLoading, setErrorMessage, CLASSES }) {
             const availableDates = getNext7Days();
             const [isClassModalOpen, setIsClassModalOpen] = React.useState(false);
 
-            // Tangani validasi & penggantian tanggal
             const handleDateSelect = (d) => {
                 const day = d.getDay();
                 const dStr = d.toISOString().split('T')[0];
@@ -794,8 +768,6 @@
             return (
                 <div className="flex-1 flex flex-col justify-between bg-white pb-32 animate-in slide-in-from-right duration-300">
                     <div className="p-6 space-y-8">
-                        
-                        {/* TITLE DENGAN TOMBOL KEMBALI YANG SANGAT JELAS */}
                         <div className="flex items-center gap-2 text-slate-500 cursor-pointer w-fit" onClick={onBack}>
                             <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center hover:bg-slate-100 transition-colors">
                                 <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
@@ -804,7 +776,6 @@
                         </div>
                         <h2 className="text-2xl font-black text-slate-900 leading-tight">Review Order</h2>
 
-                        {/* IDENTITAS SISWA */}
                         <div className="space-y-4">
                             <h3 className="font-extrabold text-xs tracking-[0.2em] uppercase text-slate-400 flex items-center gap-2">
                                 <UserIcon className="w-4 h-4" /> Identitas Siswa
@@ -822,7 +793,6 @@
                                     />
                                 </div>
                                 
-                                {/* CUSTOM MODERN ACCORDION/GRID POPUP KELAS */}
                                 <div className="space-y-1.5">
                                     <label className="text-[10px] font-bold text-slate-400 ml-1">KELAS</label>
                                     <div className="relative">
@@ -856,7 +826,6 @@
                             </div>
                         </div>
 
-                        {/* JADWAL TAKE AWAY */}
                         <div className="space-y-4">
                             <h3 className="font-extrabold text-xs tracking-[0.2em] uppercase text-slate-400 flex items-center gap-2">
                                 <Clock className="w-4 h-4" /> Jadwal Take Away
@@ -873,7 +842,6 @@
                                 </div>
                                 
                                 <div className="space-y-4">
-                                    {/* Pemilih Tanggal */}
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-bold text-slate-500 ml-1 uppercase">Pilih Tanggal (Senin - Jumat)</label>
                                         <div className="grid grid-cols-4 gap-2">
@@ -902,7 +870,6 @@
                                         </div>
                                     </div>
 
-                                    {/* Pemilih Jam */}
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-bold text-slate-500 text-center block">JAM PENGAMBILAN</label>
                                         <div className="grid grid-cols-2 gap-3">
@@ -929,7 +896,6 @@
                             </div>
                         </div>
 
-                        {/* LIST BELANJA */}
                         <div className="space-y-4">
                             <h3 className="font-extrabold text-xs tracking-[0.2em] uppercase text-slate-400">Daftar Belanja</h3>
                             <div className="space-y-4">
@@ -950,7 +916,6 @@
                                                         <h4 className="font-extrabold text-sm text-slate-800 leading-snug">{item.name}</h4>
                                                     </div>
                                                     
-                                                    {/* Tag Varian & Catatan */}
                                                     <div className="flex flex-wrap gap-1.5 mt-1.5">
                                                         {item.selectedVariant && (
                                                             <span className="text-[9px] text-orange-600 font-extrabold uppercase tracking-widest bg-orange-50 px-2 py-0.5 rounded-md">
@@ -987,7 +952,6 @@
                                                 </div>
                                             </div>
                                             
-                                            {/* Tombol Hapus */}
                                             <button 
                                                 onClick={() => onRemove(item.cartId)} 
                                                 className="absolute top-4 right-4 text-slate-300 hover:text-red-500 p-1 rounded-lg hover:bg-red-50 transition"
@@ -1001,7 +965,6 @@
                             </div>
                         </div>
 
-                        {/* METODE PEMBAYARAN */}
                         <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-3xl p-5 shadow-lg shadow-orange-100 flex gap-4 items-start border border-orange-400">
                             <div className="bg-white/20 p-2.5 rounded-2xl flex-shrink-0 mt-0.5">
                                 <CreditCard className="w-5 h-5 text-white" />
@@ -1014,7 +977,6 @@
                             </div>
                         </div>
 
-                        {/* RINCIAN NOTA BIAYA */}
                         <div className="bg-slate-50 rounded-3xl p-5 space-y-4 border border-slate-100">
                             <div className="flex justify-between text-xs font-extrabold text-slate-400">
                                 <span>Subtotal</span>
@@ -1022,7 +984,7 @@
                             </div>
                             <div className="flex justify-between text-xs font-extrabold text-slate-400">
                                 <span>Biaya Layanan (Platform)</span>
-                                <span className="text-slate-800 font-black">Rp2.000</span>
+                                <span className="text-slate-800 font-black">Rp0</span>
                             </div>
                             <div className="flex justify-between items-center border-t border-dashed border-slate-200 pt-4 mt-2">
                                 <span className="font-extrabold text-xs uppercase tracking-wider text-slate-400">Total Pembayaran</span>
@@ -1031,7 +993,6 @@
                         </div>
                     </div>
 
-                    {/* STICKY FOOTER ACTION */}
                     <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-6 bg-white border-t border-slate-100 z-10 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
                         <button 
                             onClick={onOrder} 
@@ -1049,7 +1010,6 @@
                         </p>
                     </div>
 
-                    {/* CUSTOM CLASS DRAWER MODAL (POPUP PILIHAN KELAS MODERN) */}
                     {isClassModalOpen && (
                         <div className="fixed inset-0 z-[110] flex items-end justify-center p-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
                             <div className="absolute inset-0" onClick={() => setIsClassModalOpen(false)}></div>
@@ -1116,7 +1076,6 @@
                         <p className="text-xs text-slate-500 leading-normal font-semibold">Tunjukkan kode nota di bawah saat mengambil pesanan di Ruang OSIS.</p>
                     </div>
 
-                    {/* RECEIPT DETAIL BOX */}
                     <div className="bg-slate-50 rounded-2xl p-4 text-left space-y-3 border border-slate-200/60 text-xs w-full max-w-xs mt-6 mb-8 shadow-sm">
                         <div className="flex justify-between pb-2 border-b border-dashed border-slate-200">
                             <span className="text-slate-400 font-semibold">Pemesan</span>
@@ -1140,7 +1099,6 @@
                         </div>
                     </div>
 
-                    {/* KODE PESANAN CARD */}
                     <div className="bg-orange-50 border-2 border-dashed border-orange-200 p-6 rounded-2xl w-full max-w-xs mb-8 shadow-sm">
                         <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-2">KODE PESANAN</p>
                         <div className="text-4xl font-black text-slate-800 tracking-widest font-mono">{orderCode}</div>
