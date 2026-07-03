@@ -5,17 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MANSIX MARKET</title>
      
-    <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     
-    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Google Fonts: Plus Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
     
     <style>
@@ -59,7 +55,6 @@
 </head>
 <body class="antialiased flex justify-center items-start min-h-screen">
 
-    <!-- Container Utama (Centered Mobile Frame) -->
     <div id="root" class="w-full max-w-md min-h-screen bg-white shadow-2xl relative flex flex-col overflow-x-hidden"></div>
 
     <script type="text/babel">
@@ -175,20 +170,27 @@
                 prepTime: "10 Min", 
                 calories: "450 kkal", 
                 image: "https://i.ibb.co.com/m5mPFz2b/IMG-20260703-WA0010.jpg",
-                variants: ["Oreo Cheese", "Choco Cheese"]
+                variants: [
+                    { name: "Oreo Cheese", price: 5000 },
+                    { name: "Choco Cheese", price: 5000 }
+                ]
             },
             
             { 
                 id: 2, 
                 name: "Sandwich", 
-                price: 17000, 
+                price: 17000, // Harga default awal di katalog
                 category: "Sandwich", 
-                description: "Ini dia pilihan menu sarapan yang gurih dan mengenyangkan\n\nPilihan Varian:\n• Ayam Katsu: Fillet dada ayam pilihan yang digoreng krispi dengan balutan tepung roti keemasan. Renyah di luar, tetap juicy di dalam! 🍗✨\n• Beef Patty: Daging sapi cincang premium yang dibumbui gurih dan dipanggang sempurna. Tebal, empuk, dan kaya rasa! 🥩🔥\n•Dada Ayam Lada Hitam: Potongan dada ayam empuk yang ditumis dengan saus lada hitam khas yang meresap. Perpaduan rasa manis-gurih dengan sensasi hangat yang pas! 🌶️👨‍🍳 ", 
+                description: "Ini dia pilihan menu sarapan yang gurih dan mengenyangkan\n\nPilihan Varian:\n• Ayam Katsu: Fillet dada ayam pilihan yang digoreng krispi dengan balutan tepung roti keemasan. Renyah di luar, tetap juicy di dalam! 🍗✨\n• Beef Patty: Daging sapi cincang premium yang dibumbui gurih dan dipanggang sempurna. Tebal, empuk, dan kaya rasa! 🥩🔥\n• Dada Ayam Lada Hitam: Potongan dada ayam empuk yang ditumis dengan saus lada hitam khas yang meresap. Perpaduan rasa manis-gurih dengan sensasi hangat yang pas! 🌶️👨‍🍳 ", 
                 rating: 4.7, 
                 prepTime: "10 Min", 
                 calories: "400 kkal", 
                 image: "https://i.ibb.co.com/H15pyVz/IMG-20260111-WA0002.jpg",
-                variants: ["Beef Patty", "Ayam Katsu", "Dada Ayam Lada Hitam"]
+                variants: [
+                    { name: "Beef Patty", price: 17000 },
+                    { name: "Ayam Katsu", price: 15000 },
+                    { name: "Dada Ayam Lada Hitam", price: 17000 }
+                ]
             },
         ];
 
@@ -260,15 +262,18 @@
                 const variant = detailVariant;
                 const notes = detailNotes.trim();
                 const qty = detailQty;
+                
+                // Ambil harga dari varian yang aktif dipilih
+                const finalPrice = variant ? variant.price : selectedProduct.price;
 
                 setCart(prev => {
-                    // cartId unik berdasarkan: id produk + varian + catatan tambahan
-                    const cartId = `${selectedProduct.id}-${variant || 'standard'}-${notes || 'none'}`;
+                    // cartId unik berdasarkan: id produk + nama varian + catatan tambahan
+                    const cartId = `${selectedProduct.id}-${variant ? variant.name : 'standard'}-${notes || 'none'}`;
                     const ex = prev.find(i => i.cartId === cartId);
                     if (ex) {
                         return prev.map(i => i.cartId === cartId ? { ...i, quantity: i.quantity + qty } : i);
                     } else {
-                        return [...prev, { ...selectedProduct, cartId, quantity: qty, selectedVariant: variant, notes }];
+                        return [...prev, { ...selectedProduct, cartId, price: finalPrice, quantity: qty, selectedVariant: variant ? variant.name : null, notes }];
                     }
                 });
 
@@ -495,7 +500,7 @@
                     </div>
 
                     <div className="p-4 flex-1 pb-32">
-                        {/* BANNER BRANDING */}
+                        /* BANNER BRANDING */
                         <div className="relative h-36 rounded-3xl bg-gradient-to-br from-orange-500 to-amber-500 overflow-hidden mb-6 flex items-center justify-center shadow-lg shadow-orange-100">
                             <div className="absolute -top-6 -right-6 opacity-10">
                                 <ShoppingBag className="w-40 h-40 text-white" />
@@ -532,7 +537,6 @@
 
                         {/* LIST PRODUK */}
                         {selectedCategory === 'SEMUA' ? (
-                            // Pengelompokan Kategori Berbeda
                             Array.from(new Set(products.map(p => p.category))).map(catName => (
                                 <section key={catName} className="mb-10">
                                     <div className="flex items-center gap-3 mb-6">
@@ -581,6 +585,19 @@
 
         // --- CARD ROW UNTUK ITEM DI KATALOG ---
         function ProductItemRow({ product, onProductClick }) {
+            // Tampilkan rentang harga jika varian memiliki harga yang berbeda
+            const renderPrice = () => {
+                if (product.variants && product.variants.length > 0) {
+                    const prices = product.variants.map(v => v.price);
+                    const minPrice = Math.min(...prices);
+                    const maxPrice = Math.max(...prices);
+                    if (minPrice !== maxPrice) {
+                        return `${formatRupiah(minPrice)} - ${formatRupiah(maxPrice)}`;
+                    }
+                }
+                return formatRupiah(product.price);
+            };
+
             return (
                 <div 
                     onClick={() => onProductClick(product)}
@@ -601,7 +618,7 @@
                             <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed font-semibold">{product.description}</p>
                         </div>
                         <div className="flex items-center justify-between mt-1">
-                            <span className="font-extrabold text-sm text-slate-700">{formatRupiah(product.price)}</span>
+                            <span className="font-extrabold text-sm text-slate-700">{renderPrice()}</span>
                             <button 
                                 type="button" 
                                 className="bg-orange-50 hover:bg-orange-500 hover:text-white text-orange-500 p-1.5 rounded-xl transition-all shadow-sm flex items-center justify-center border border-orange-100"
@@ -616,6 +633,9 @@
 
         // --- SCREEN: DEDICATED PRODUCT DETAIL (TANPA HEADER ATAS) ---
         function ProductDetailScreen({ product, onBack, detailQty, setDetailQty, detailVariant, setDetailVariant, detailNotes, setDetailNotes, commitAddToCart }) {
+            // Dapatkan harga dari varian aktif saat ini
+            const activePrice = detailVariant ? detailVariant.price : product.price;
+
             return (
                 <div className="flex-1 flex flex-col justify-between bg-white pb-32 animate-in slide-in-from-right duration-300">
                     <div>
@@ -644,7 +664,7 @@
                             </div>
                             
                             <h2 className="text-2xl font-black leading-tight text-slate-900 mb-2">{product.name}</h2>
-                            <p className="text-xl font-black text-orange-600 mb-6">{formatRupiah(product.price)}</p>
+                            <p className="text-xl font-black text-orange-600 mb-6">{formatRupiah(activePrice)}</p>
 
                             {/* BADGES INFO */}
                             <div className="grid grid-cols-3 gap-3 border-y border-slate-100 py-4.5 justify-between mb-8 text-center bg-slate-50/50 rounded-2xl p-2">
@@ -672,20 +692,24 @@
                                         <h3 className="font-extrabold text-xs tracking-wider uppercase text-slate-400">Pilih Varian</h3>
                                         <span className="text-[9px] font-black bg-orange-500 text-white px-2.5 py-1 rounded-full uppercase tracking-wider">Wajib</span>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-1 gap-3">
                                         {product.variants.map(v => {
-                                            const isSelected = v === detailVariant;
+                                            const isSelected = detailVariant && v.name === detailVariant.name;
                                             return (
                                                 <button 
-                                                    key={v}
+                                                    type="button"
+                                                    key={v.name}
                                                     onClick={() => setDetailVariant(v)}
-                                                    className={`py-4 px-4 rounded-2xl text-xs font-bold border-2 transition-all duration-200 active:scale-95 ${
+                                                    className={`py-4 px-4 rounded-2xl text-xs font-bold border-2 transition-all duration-200 active:scale-95 flex justify-between items-center ${
                                                         isSelected 
                                                             ? 'border-orange-500 bg-orange-50 text-orange-600 shadow-md shadow-orange-50' 
                                                             : 'border-slate-100 bg-slate-50 text-slate-400 hover:bg-slate-100'
                                                     }`}
                                                 >
-                                                    {v}
+                                                    <span>{v.name}</span>
+                                                    <span className={isSelected ? "text-orange-600 font-extrabold" : "text-slate-500 font-semibold"}>
+                                                        {formatRupiah(v.price)}
+                                                    </span>
                                                 </button>
                                             );
                                         })}
@@ -730,7 +754,7 @@
                             onClick={commitAddToCart}
                             className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-4 px-6 rounded-2xl font-extrabold text-sm shadow-xl shadow-orange-100 transition-all transform hover:translate-y-[-1px] active:scale-[0.99]"
                         >
-                            Tambah - {formatRupiah(product.price * detailQty)}
+                            Tambah - {formatRupiah(activePrice * detailQty)}
                         </button>
                     </div>
                 </div>
