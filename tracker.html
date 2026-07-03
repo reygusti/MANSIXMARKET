@@ -4,122 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lacak Pesanan - MANSIX MARKET</title>
-     
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-                    colors: {
-                        brand: { 400: '#fb923c', 500: '#f97316', 600: '#ea580c' }
-                    },
-                    animation: { 'fade-in': 'fadeIn 0.3s ease-out', 'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)' },
-                    keyframes: {
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
-                    }
+                    colors: { brand: { 500: '#f97316' } }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
-        .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #f97316; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        body { background: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .loader { border: 3px solid rgba(255,255,255,0.2); border-top: 3px solid #f97316; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="antialiased flex justify-center items-start min-h-screen">
-    <div id="root" class="w-full max-w-md min-h-screen bg-slate-50 relative flex flex-col shadow-2xl ring-1 ring-slate-900/5 overflow-hidden"></div>
+<body class="text-slate-100">
+    <div id="root" class="min-h-screen flex justify-center"></div>
 
     <script type="text/babel">
-        const Icon = {
-            ChevronLeft: ({ className = "w-6 h-6" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>,
-            Search: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z" /></svg>,
-            Package: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>,
-            CheckCircle: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        };
-
-        const formatRupiah = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
-
         function App() {
-            const [searchQuery, setSearchQuery] = React.useState('');
-            const [isSearching, setIsSearching] = React.useState(false);
-            const [orderData, setOrderData] = React.useState(null);
+            const [query, setQuery] = React.useState('');
+            const [data, setData] = React.useState(null);
+            const [loading, setLoading] = React.useState(false);
             const [error, setError] = React.useState('');
 
-            const handleSearch = async (e) => {
+            const searchOrder = async (e) => {
                 e.preventDefault();
-                setIsSearching(true); setError(''); setOrderData(null);
+                setLoading(true); setError(''); setData(null);
                 try {
-                    const response = await fetch("https://script.google.com/macros/s/AKfycbwBODV8hs85b-M6aJUMOmmEEWZl02IGRNgzQCvAQkFXk_kbk4IHAB-TxK-gbp4fxqAAxQ/exec");
-                    const data = await response.json();
-                    const found = data.find(item => item.orderCode.toString().toUpperCase() === searchQuery.toUpperCase());
-                    if (found) setOrderData(found);
-                    else setError('Pesanan tidak ditemukan.');
-                } catch { setError('Gagal terhubung ke server.'); }
-                setIsSearching(false);
-            };
-
-            const getStatusIndex = (status) => {
-                const map = { 'menunggu': 0, 'sedang_disiapkan': 1, 'siap_diambil': 2, 'selesai': 3 };
-                return map[status.toLowerCase().replace(/\s/g, '_')] || 0;
+                    const res = await fetch("https://script.google.com/macros/s/AKfycbwBODV8hs85b-M6aJUMOmmEEWZl02IGRNgzQCvAQkFXk_kbk4IHAB-TxK-gbp4fxqAAxQ/exec");
+                    const json = await res.json();
+                    const found = json.find(i => i.orderCode.toString().toUpperCase() === query.toUpperCase());
+                    if (found) setData(found); else setError('Pesanan tidak ditemukan.');
+                } catch { setError('Terjadi kesalahan koneksi.'); }
+                setLoading(false);
             };
 
             return (
-                <div className="flex-1 flex flex-col p-5 relative min-h-screen">
-                    <div className="fixed inset-0 z-0 opacity-20 pointer-events-none">
-                        <div className="absolute top-[-10%] right-[-20%] w-64 h-64 bg-orange-400 rounded-full blur-[100px]"></div>
-                        <div className="absolute bottom-[-10%] left-[-20%] w-64 h-64 bg-blue-400 rounded-full blur-[100px]"></div>
-                    </div>
-
-                    <header className="relative z-10 flex items-center gap-4 mb-6 pt-2">
-                        <button onClick={() => window.history.back()} className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 shadow-sm rounded-full text-slate-600"><Icon.ChevronLeft /></button>
-                        <h2 className="text-xl font-black text-slate-800">Lacak Pesanan</h2>
+                <div className="w-full max-w-md p-6 flex flex-col items-center">
+                    <div className="fixed inset-0 z-[-1] bg-gradient-to-br from-slate-900 via-orange-900/20 to-slate-900"></div>
+                    <header className="w-full mb-10 flex items-center gap-4">
+                        <button onClick={() => window.history.back()} className="p-3 glass rounded-2xl hover:bg-white/10 transition">←</button>
+                        <h1 className="text-xl font-bold">Lacak Pesanan</h1>
                     </header>
 
-                    <form onSubmit={handleSearch} className="relative z-10 bg-white/80 backdrop-blur-xl p-6 rounded-3xl border border-white/60 shadow-xl mb-6">
-                        <input type="text" placeholder="Masukkan Kode Unik..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 border border-slate-200 rounded-2xl py-4 px-5 mb-4 text-sm font-bold tracking-widest uppercase focus:ring-4 focus:ring-orange-100 outline-none transition-all" />
-                        <button type="submit" className="w-full py-4 bg-orange-500 text-white rounded-2xl font-black shadow-lg shadow-orange-200 transition active:scale-95">
-                            {isSearching ? <div className="loader !border-white mx-auto"></div> : "Lacak Sekarang"}
-                        </button>
+                    <form onSubmit={searchOrder} className="w-full glass p-2 rounded-3xl mb-8 flex gap-2">
+                        <input className="flex-1 bg-transparent p-4 outline-none uppercase font-bold tracking-widest text-sm" placeholder="MASUKKAN KODE..." value={query} onChange={e => setQuery(e.target.value)} />
+                        <button className="bg-orange-500 p-4 rounded-2xl font-bold px-6">{loading ? <div className="loader" /> : 'Cari'}</button>
                     </form>
 
-                    {error && <div className="relative z-10 bg-red-50 text-red-600 p-4 rounded-2xl text-xs font-bold text-center border border-red-100">{error}</div>}
+                    {error && <div className="text-red-400 font-bold">{error}</div>}
 
-                    {orderData && (
-                        <div className="relative z-10 bg-white/90 backdrop-blur-xl p-6 rounded-3xl border border-white/60 shadow-xl animate-slide-up">
-                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">Pesanan: {orderData.orderCode}</h3>
-                            <div className="space-y-6 mt-4">
-                                {['menunggu', 'sedang_disiapkan', 'siap_diambil', 'selesai'].map((s, i) => (
-                                    <div key={s} className="flex items-center gap-4">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${i <= getStatusIndex(orderData.status) ? 'bg-orange-500 border-orange-500' : 'bg-white border-slate-200'}`}>
-                                            {i <= getStatusIndex(orderData.status) && <Icon.CheckCircle className="w-5 h-5 text-white" />}
-                                        </div>
-                                        <span className={`capitalize font-bold text-sm ${i === getStatusIndex(orderData.status) ? 'text-orange-600' : 'text-slate-700'}`}>
-                                            {s.replace('_', ' ')}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center">
-                                <span className="font-bold text-slate-500 text-sm">Total</span>
-                                <span className="font-black text-2xl text-slate-900">{formatRupiah(orderData.total)}</span>
+                    {data && (
+                        <div className="w-full glass p-8 rounded-3xl animate-in fade-in duration-500">
+                            <p className="text-orange-500 font-bold text-xs uppercase tracking-widest mb-1">Status Pesanan</p>
+                            <h2 className="text-3xl font-black mb-8">{data.status.replace('_', ' ').toUpperCase()}</h2>
+                            
+                            <div className="flex justify-between items-center pt-6 border-t border-white/10">
+                                <span className="text-slate-400">Total Harga</span>
+                                <span className="text-2xl font-black">Rp{Number(data.total).toLocaleString('id-ID')}</span>
                             </div>
                         </div>
                     )}
                 </div>
             );
         }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
