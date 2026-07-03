@@ -176,7 +176,7 @@
             { 
                 id: 2, 
                 name: "Sandwich", 
-                price: 15000, // Harga dasar (Ayam Katsu)
+                price: 15000, 
                 category: "Sandwich", 
                 description: "Ini dia pilihan menu sarapan yang gurih dan mengenyangkan\n\nPilihan Varian:\n• Ayam Katsu: Fillet dada ayam pilihan yang digoreng krispi dengan balutan tepung roti keemasan. Renyah di luar, tetap juicy di dalam! 🍗✨ (Rp15.000)\n• Beef Patty: Daging sapi cincang premium yang dibumbui gurih dan dipanggang sempurna. Tebal, empuk, dan kaya rasa! 🥩🔥 (+Rp2.000)\n• Dada Ayam Lada Hitam: Potongan dada ayam empuk yang ditumis dengan saus lada hitam khas yang meresap. Perpaduan rasa manis-gurih dengan sensasi hangat yang pas! 🌶️👨‍🍳 (+Rp2.000)", 
                 rating: 4.7, 
@@ -224,7 +224,6 @@
             const [isLoading, setIsLoading] = React.useState(false);
             const [errorMessage, setErrorMessage] = React.useState(''); 
             
-            // Detail Screen local states
             const [detailQty, setDetailQty] = React.useState(1);
             const [detailVariant, setDetailVariant] = React.useState(null);
             const [detailNotes, setDetailNotes] = React.useState('');
@@ -247,7 +246,6 @@
                 window.scrollTo(0, 0);
             };
 
-            // Tambahkan item dari detail screen ke dalam keranjang
             const commitAddToCart = () => {
                 if (!selectedProduct) return;
                 
@@ -255,7 +253,6 @@
                 const notes = detailNotes.trim();
                 const qty = detailQty;
 
-                // Logika Penambahan Harga Kustom Varian
                 let finalPrice = selectedProduct.price;
                 if (selectedProduct.name === "Sandwich" && (variant === "Beef Patty" || variant === "Dada Ayam Lada Hitam")) {
                     finalPrice += 2000;
@@ -606,7 +603,6 @@
         // --- SCREEN: DEDICATED PRODUCT DETAIL ---
         function ProductDetailScreen({ product, onBack, detailQty, setDetailQty, detailVariant, setDetailVariant, detailNotes, setDetailNotes, commitAddToCart }) {
             
-            // Hitung harga aktif secara langsung di antarmuka
             let activePrice = product.price;
             if (product.name === "Sandwich" && (detailVariant === "Beef Patty" || detailVariant === "Dada Ayam Lada Hitam")) {
                 activePrice = 17000;
@@ -667,10 +663,15 @@
                                     <div className="grid grid-cols-1 gap-3">
                                         {product.variants.map(v => {
                                             const isSelected = v === detailVariant;
-                                            // Tentukan teks harga label varian
-                                            let variantLabel = "+Rp0";
-                                            if (product.name === "Sandwich" && (v === "Beef Patty" || v === "Dada Ayam Lada Hitam")) {
-                                                variantLabel = "+Rp2.000";
+                                            
+                                            // Format tampilan teks harga kustom varian
+                                            let priceLabel = "";
+                                            if (product.name === "Sandwich") {
+                                                if (v === "Beef Patty" || v === "Dada Ayam Lada Hitam") {
+                                                    priceLabel = "+Rp2.000";
+                                                } else if (v === "Ayam Katsu") {
+                                                    priceLabel = "+Rp0";
+                                                }
                                             }
 
                                             return (
@@ -685,9 +686,11 @@
                                                     }`}
                                                 >
                                                     <span>{v}</span>
-                                                    <span className={isSelected ? "text-orange-600 font-extrabold" : "text-slate-400 font-medium"}>
-                                                        {variantLabel}
-                                                    </span>
+                                                    {priceLabel && (
+                                                        <span className={isSelected ? "text-orange-600 font-extrabold" : "text-slate-400 font-medium"}>
+                                                            {priceLabel}
+                                                        </span>
+                                                    )}
                                                 </button>
                                             );
                                         })}
@@ -837,7 +840,7 @@
                                     </div>
                                     <div>
                                         <p className="text-xs font-extrabold text-slate-800">Ruang OSIS MAN 6 Jakarta</p>
-                                        <p className="text-[10px] text-slate-500">Gedung Utama, Lantai 1</p>
+                                        <p className="text-[10px] text-slate-500">Samping Ruang Rapat</p>
                                     </div>
                                 </div>
                                 
