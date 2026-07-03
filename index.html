@@ -40,12 +40,14 @@
                     animation: {
                         'fade-in': 'fadeIn 0.3s ease-out',
                         'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                        'toast-enter': 'toastEnter 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                        'bounce-slight': 'bounceSlight 2s infinite',
+                        'toast-enter': 'toastEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
                     },
                     keyframes: {
                         fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
                         slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-                        toastEnter: { '0%': { opacity: '0', transform: 'translateY(-20px) scale(0.9)' }, '100%': { opacity: '1', transform: 'translateY(0) scale(1)' } },
+                        bounceSlight: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-5px)' } },
+                        toastEnter: { '0%': { opacity: '0', transform: 'translateY(-20px) scale(0.95)' }, '100%': { opacity: '1', transform: 'translateY(0) scale(1)' } },
                     }
                 }
             }
@@ -60,14 +62,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Glassmorphism */
-        .glass {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(241, 245, 249, 1);
-        }
-
         /* Custom Loader */
         .loader {
             border: 3px solid #f3f3f3;
@@ -197,6 +191,8 @@
         };
 
         // --- KOMPONEN TOAST ---
+        // FIX: Toast dipusatkan menggunakan Flexbox container "fixed top-4 left-0 w-full flex justify-center"
+        // Sehingga presisi di tengah dan teks responsif menyesuaikan lebar (flex-1 pada teks).
         const Toast = ({ message, type, onClose }) => {
             React.useEffect(() => {
                 const timer = setTimeout(onClose, 3000);
@@ -210,14 +206,14 @@
             };
 
             return (
-                <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-sm animate-toast-enter">
-                    <div className={`${bgColors[type]} px-4 py-3 rounded-2xl shadow-xl flex items-center justify-between gap-3`}>
-                        <div className="flex items-center gap-2">
-                            {type === 'error' && <Icon.Alert className="w-5 h-5" />}
-                            {type === 'success' && <Icon.CheckCircle className="w-5 h-5" />}
-                            <p className="text-sm font-semibold">{message}</p>
+                <div className="fixed top-4 left-0 w-full z-[100] flex justify-center px-4 pointer-events-none">
+                    <div className={`pointer-events-auto w-full max-w-sm ${bgColors[type]} px-4 py-3.5 rounded-2xl shadow-xl flex items-center justify-between gap-3 animate-toast-enter`}>
+                        <div className="flex items-center gap-2.5 flex-1">
+                            {type === 'error' && <Icon.Alert className="w-5 h-5 flex-shrink-0" />}
+                            {type === 'success' && <Icon.CheckCircle className="w-5 h-5 flex-shrink-0" />}
+                            <p className="text-sm font-bold leading-snug">{message}</p>
                         </div>
-                        <button onClick={onClose} className="opacity-70 hover:opacity-100 transition"><Icon.X className="w-4 h-4" /></button>
+                        <button onClick={onClose} className="opacity-70 hover:opacity-100 transition flex-shrink-0 p-1"><Icon.X className="w-4 h-4" /></button>
                     </div>
                 </div>
             );
@@ -225,6 +221,17 @@
 
         // --- APP UTAMA ---
         function App() {
+            // STATE UNTUK SPLASH SCREEN (Loading Awal)
+            const [isAppLoaded, setIsAppLoaded] = React.useState(false);
+            const [isFadingOut, setIsFadingOut] = React.useState(false);
+
+            React.useEffect(() => {
+                // Splash screen menghilang setelah 2.5 detik (fade out), lalu hilang dari DOM di 3 detik.
+                const timer1 = setTimeout(() => setIsFadingOut(true), 2500); 
+                const timer2 = setTimeout(() => setIsAppLoaded(true), 3000); 
+                return () => { clearTimeout(timer1); clearTimeout(timer2); };
+            }, []);
+
             const [cart, setCart] = React.useState(() => {
                 const saved = localStorage.getItem('mansix_cart');
                 return saved ? JSON.parse(saved) : [];
@@ -348,6 +355,34 @@
             return (
                 <div className="flex-1 flex flex-col justify-between min-h-screen bg-slate-50/50 relative overflow-hidden">
                     
+                    {/* SPLASH SCREEN EFEK LOADING (3 DETIK) */}
+                    {!isAppLoaded && (
+                        <div className={`fixed inset-0 z-[999] bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-500 ${isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                            <div className="relative flex flex-col items-center">
+                                {/* Efek Cahaya Belakang */}
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-brand-500/30 rounded-full blur-3xl animate-pulse"></div>
+                                
+                                {/* Ikon Logo Aesthetic */}
+                                <div className="w-20 h-20 bg-gradient-to-br from-brand-400 to-brand-600 rounded-3xl rotate-45 flex items-center justify-center shadow-[0_0_30px_rgba(249,115,22,0.4)] mb-8 relative z-10 animate-bounce-slight">
+                                    <Icon.ShoppingBag className="w-10 h-10 text-white -rotate-45" />
+                                </div>
+                                
+                                {/* Teks */}
+                                <div className="text-center relative z-10 overflow-hidden">
+                                    <h1 className="text-3xl font-black text-white tracking-[0.2em] mb-1 animate-slide-up">MANSIX</h1>
+                                    <p className="text-xs font-bold text-brand-500 tracking-[0.4em] animate-slide-up" style={{animationDelay: '0.1s'}}>MARKET</p>
+                                </div>
+                                
+                                {/* Animasi Titik-Titik */}
+                                <div className="absolute bottom-[-60px] flex gap-2">
+                                    <div className="w-2 h-2 bg-brand-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                                    <div className="w-2 h-2 bg-brand-500/80 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                                    <div className="w-2 h-2 bg-brand-500/60 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Global Ambient Background (Biru dan Oren Blur) - Tampil di Home/Checkout */}
                     <div className="fixed inset-0 z-0 pointer-events-none">
                         <div className="absolute top-[-5%] left-[-10%] w-[60%] h-[50%] bg-blue-300/15 rounded-full blur-[80px]"></div>
@@ -598,7 +633,7 @@
             );
         }
 
-        // --- SCREEN: PRODUCT DETAIL (FIX: GAMBAR FULL WIDTH SEPERTI SCREENSHOT) ---
+        // --- SCREEN: PRODUCT DETAIL (FOTO FULL-WIDTH) ---
         function ProductDetailScreen({ product, onBack, detailQty, setDetailQty, detailVariant, setDetailVariant, detailNotes, setDetailNotes, commitAddToCart }) {
             
             let activePrice = product.price;
@@ -930,7 +965,7 @@
                     {isClassModalOpen && (
                         <div className="fixed inset-0 z-[110] flex items-end justify-center bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
                             <div className="absolute inset-0" onClick={() => setIsClassModalOpen(false)}></div>
-                            <div className="relative w-full max-w-md bg-white rounded-t-[32px] p-6 shadow-2xl max-h-[80vh] overflow-y-auto no-scrollbar animate-slide-up pb-12 z-20">
+                            <div className="relative w-full max-w-md bg-white rounded-t-[32px] p-6 shadow-2xl border-t border-slate-100 max-h-[80vh] overflow-y-auto no-scrollbar animate-slide-up pb-12 z-20">
                                 <div className="flex justify-between items-center mb-6">
                                     <h3 className="text-lg font-black text-slate-900 tracking-tight">Pilih Kelas Kamu</h3>
                                     <button 
