@@ -35,6 +35,7 @@
                             400: '#fb923c',
                             500: '#f97316',
                             600: '#ea580c',
+                            yellow: '#f59e0b', // Tambahan warna kuning untuk logo
                         }
                     },
                     animation: {
@@ -127,7 +128,19 @@
             Star: ({ className = "w-4 h-4" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
             Flame: ({ className = "w-4 h-4" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" /></svg>,
             Download: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>,
-            Sparkles: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.428-1.428L13.5 18.75l1.178-.394a2.25 2.25 0 001.428-1.428L16.5 15.75l.394 1.178a2.25 2.25 0 001.428 1.428l1.178.394-1.178.394a2.25 2.25 0 00-1.428 1.428z" /></svg>
+            Sparkles: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.428-1.428L13.5 18.75l1.178-.394a2.25 2.25 0 001.428-1.428L16.5 15.75l.394 1.178a2.25 2.25 0 001.428 1.428l1.178.394-1.178.394a2.25 2.25 0 00-1.428 1.428z" /></svg>,
+            // Ikon Tambahan untuk Explore
+            Globe: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>,
+            BookOpen: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>,
+            Library: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" /></svg>,
+            Newspaper: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" /></svg>,
+            Info: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>,
+            Award: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>,
+            GraduationCap: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" /></svg>,
+            Megaphone: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg>,
+            Users: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>,
+            Building: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>,
+            HeartHandshake: ({ className = "w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
         };
 
         // --- DATA ---
@@ -166,6 +179,25 @@
             }
         ];
 
+        // --- DATA EXPLORE MAN 6 ---
+        const EXPLORE_LINKS_UTAMA = [
+            { title: "Web Utama", url: "https://man6jkt.sch.id", icon: "Globe", desc: "Portal resmi madrasah", color: "bg-blue-500", textCol: "text-blue-500", bgLight: "bg-blue-50" },
+            { title: "SSO Perpus", url: "https://sso.man6jkt.sch.id/perpus", icon: "BookOpen", desc: "Akses login perpustakaan", color: "bg-emerald-500", textCol: "text-emerald-500", bgLight: "bg-emerald-50" },
+            { title: "SLiMS", url: "https://slims.man6jkt.sch.id/", icon: "Library", desc: "Sistem Manajemen Perpustakaan", color: "bg-teal-500", textCol: "text-teal-500", bgLight: "bg-teal-50" },
+        ];
+
+        const EXPLORE_LINKS_INFO = [
+            { title: "Berita", url: "https://man6jkt.sch.id/berita/", icon: "Newspaper", desc: "Berita & pengumuman terbaru", color: "bg-indigo-500", textCol: "text-indigo-500", bgLight: "bg-indigo-50" },
+            { title: "About Us", url: "https://man6jkt.sch.id/about-us/", icon: "Info", desc: "Profil singkat MAN 6 Jakarta", color: "bg-violet-500", textCol: "text-violet-500", bgLight: "bg-violet-50" },
+            { title: "Program", url: "https://man6jkt.sch.id/program-unggulan/", icon: "Award", desc: "Program keunggulan", color: "bg-amber-500", textCol: "text-amber-500", bgLight: "bg-amber-50" },
+            { title: "Akademik", url: "https://man6jkt.sch.id/akademik/", icon: "GraduationCap", desc: "Informasi kurikulum & KBM", color: "bg-sky-500", textCol: "text-sky-500", bgLight: "bg-sky-50" },
+            { title: "Humas", url: "https://man6jkt.sch.id/humas/", icon: "Megaphone", desc: "Hubungan masyarakat", color: "bg-fuchsia-500", textCol: "text-fuchsia-500", bgLight: "bg-fuchsia-50" },
+            { title: "Kesiswaan", url: "https://man6jkt.sch.id/kesiswaan/", icon: "Users", desc: "OSIS, Ekskul & Prestasi", color: "bg-rose-500", textCol: "text-rose-500", bgLight: "bg-rose-50" },
+            { title: "Sarpras", url: "https://man6jkt.sch.id/sarpras/", icon: "Building", desc: "Sarana & Prasarana", color: "bg-slate-700", textCol: "text-slate-700", bgLight: "bg-slate-100" },
+            { title: "Bim. Konseling", url: "https://man6jkt.sch.id/bimbingan-konseling/", icon: "HeartHandshake", desc: "Layanan bimbingan siswa", color: "bg-pink-500", textCol: "text-pink-500", bgLight: "bg-pink-50" },
+        ];
+
+
         // --- UTILS ---
         const formatRupiah = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
         
@@ -194,8 +226,6 @@
         };
 
         // --- KOMPONEN TOAST ---
-        // FIX: Toast dipusatkan menggunakan Flexbox container "fixed top-4 left-0 w-full flex justify-center"
-        // Sehingga presisi di tengah dan teks responsif menyesuaikan lebar (flex-1 pada teks).
         const Toast = ({ message, type, onClose }) => {
             React.useEffect(() => {
                 const timer = setTimeout(onClose, 3000);
@@ -244,7 +274,7 @@
                 localStorage.setItem('mansix_cart', JSON.stringify(cart));
             }, [cart]);
 
-            const [view, setView] = React.useState('list'); 
+            const [view, setView] = React.useState('list'); // 'list', 'tracker', 'detail', 'checkout_form', 'success', 'explore'
             const [selectedProduct, setSelectedProduct] = React.useState(null);
             const [uniqueOrderCode, setUniqueOrderCode] = React.useState('');
             
@@ -396,12 +426,16 @@
                     {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
                     <div className="flex-1 flex flex-col relative z-10">
-                        <main className="flex-1 flex flex-col pb-20">
+                        <main className="flex-1 flex flex-col pb-24">
                             {view === 'list' && (
                                 <ProductListScreen 
                                     products={PRODUCTS} 
                                     onProductClick={handleProductClick} 
                                 />
+                            )}
+
+                            {view === 'explore' && (
+                                <ExploreScreen />
                             )}
 
                             {view === 'tracker' && (
@@ -454,7 +488,7 @@
 
                     {/* FLOATING CART BAR */}
                     {view === 'list' && totalItems > 0 && (
-                        <div className="fixed bottom-[72px] left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-40 animate-slide-up">
+                        <div className="fixed bottom-[85px] left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-40 animate-slide-up">
                             <button 
                                 onClick={() => { setView('checkout_form'); window.scrollTo(0, 0); }}
                                 className="w-full bg-slate-900 text-white p-4 rounded-2xl flex items-center justify-between shadow-[0_8px_30px_rgb(0,0,0,0.3)] transition-transform hover:scale-[1.02] active:scale-95 border border-slate-700"
@@ -480,41 +514,140 @@
                     )}
 
 
-                    {/* BOTTOM NAVIGATION - IKON SAJA */}
-                    {(view === 'list' || view === 'tracker') && (
-                        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-[58px] bg-white/95 backdrop-blur-xl border-t border-slate-200/80 shadow-[0_-6px_22px_rgba(15,23,42,0.07)] z-50" aria-label="Navigasi utama">
-                            <div className="grid grid-cols-2 h-full px-10">
+                    {/* BOTTOM NAVIGATION - REDESIGN DENGAN MANSIX EXPLORE DI TENGAH */}
+                    {(view === 'list' || view === 'tracker' || view === 'explore') && (
+                        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white rounded-t-[20px] shadow-[0_-10px_30px_rgba(0,0,0,0.06)] z-50 border-t border-slate-100" aria-label="Navigasi utama">
+                            <div className="relative flex justify-between items-center px-8 h-[65px]">
+                                
+                                {/* Kiri: Beranda */}
                                 <button
                                     type="button"
-                                    aria-label="Beranda"
-                                    aria-current={view === 'list' ? 'page' : undefined}
                                     onClick={() => {
                                         setSelectedProduct(null);
                                         setView('list');
                                         window.scrollTo(0, 0);
                                     }}
-                                    className={`relative flex items-center justify-center transition-all active:scale-90 ${view === 'list' ? 'text-brand-500' : 'text-slate-400 hover:text-slate-600'}`}
+                                    className={`flex flex-col items-center justify-center gap-1 w-16 transition-all active:scale-90 ${view === 'list' ? 'text-brand-500' : 'text-slate-400 hover:text-slate-600'}`}
                                 >
-                                    <Icon.Home className="w-[22px] h-[22px]" />
-                                    {view === 'list' && <span className="absolute bottom-1.5 w-1 h-1 bg-brand-500 rounded-full"></span>}
+                                    <Icon.Home className="w-6 h-6" />
+                                    <span className={`text-[10px] font-bold ${view === 'list' ? 'opacity-100' : 'opacity-0'} transition-opacity`}>Beranda</span>
                                 </button>
+
+                                {/* Tengah: Mansix Explore (Bulat Floating ala Allo) */}
+                                <div className="absolute left-1/2 -translate-x-1/2 -top-7">
+                                    <button
+                                        onClick={() => {
+                                            setSelectedProduct(null);
+                                            setView('explore');
+                                            window.scrollTo(0, 0);
+                                        }}
+                                        className="relative group flex flex-col items-center justify-center"
+                                    >
+                                        {/* Lingkaran Luar (Background / Stroke Putih Besar) */}
+                                        <div className={`w-[72px] h-[72px] bg-white rounded-full flex items-center justify-center shadow-[0_-5px_15px_rgba(0,0,0,0.05)] transition-transform duration-300 ${view === 'explore' ? 'scale-105' : 'group-hover:scale-105'}`}>
+                                            {/* Lingkaran Dalam Hitam */}
+                                            <div className="w-[62px] h-[62px] bg-[#2d2d2d] rounded-full flex flex-col items-center justify-center shadow-inner">
+                                                <span className="text-brand-yellow font-extrabold text-[12px] leading-[1.1] tracking-tight">mansix</span>
+                                                <span className="text-white font-medium text-[10px] leading-[1.1] tracking-tight">explore</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+
+                                {/* Kanan: Tracker */}
                                 <button
                                     type="button"
-                                    aria-label="Lacak Pesanan"
-                                    aria-current={view === 'tracker' ? 'page' : undefined}
                                     onClick={() => {
                                         setSelectedProduct(null);
                                         setView('tracker');
                                         window.scrollTo(0, 0);
                                     }}
-                                    className={`relative flex items-center justify-center transition-all active:scale-90 ${view === 'tracker' ? 'text-brand-500' : 'text-slate-400 hover:text-slate-600'}`}
+                                    className={`flex flex-col items-center justify-center gap-1 w-16 transition-all active:scale-90 ${view === 'tracker' ? 'text-brand-500' : 'text-slate-400 hover:text-slate-600'}`}
                                 >
-                                    <Icon.PackageSearch className="w-[22px] h-[22px]" />
-                                    {view === 'tracker' && <span className="absolute bottom-1.5 w-1 h-1 bg-brand-500 rounded-full"></span>}
+                                    <Icon.PackageSearch className="w-6 h-6" />
+                                    <span className={`text-[10px] font-bold ${view === 'tracker' ? 'opacity-100' : 'opacity-0'} transition-opacity`}>Tracker</span>
                                 </button>
                             </div>
                         </nav>
                     )}
+                </div>
+            );
+        }
+
+        // --- SCREEN: EXPLORE MANSIX (HALAMAN BARU) ---
+        function ExploreScreen() {
+            const handleLink = (url) => {
+                window.open(url, '_blank');
+            };
+
+            return (
+                <div className="flex-1 min-h-screen pt-8 px-5 pb-28 animate-fade-in relative z-10">
+                    {/* Header Explore */}
+                    <div className="text-center mb-6 relative">
+                        <div className="w-16 h-16 bg-[#2d2d2d] rounded-full flex flex-col items-center justify-center mx-auto mb-3 shadow-lg border-[3px] border-white">
+                            <span className="text-brand-yellow font-extrabold text-[14px] leading-tight">mansix</span>
+                            <span className="text-white font-medium text-[11px] leading-tight">explore</span>
+                        </div>
+                        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Eksplorasi MAN 6</h1>
+                        <p className="text-slate-500 font-medium text-xs mt-1">Akses cepat portal dan aplikasi madrasah</p>
+                    </div>
+
+                    {/* Section 1: Aplikasi & Sistem */}
+                    <div className="mb-6">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Icon.Sparkles className="w-4 h-4 text-brand-500" />
+                            <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Aplikasi Utama</h2>
+                        </div>
+                        <div className="grid grid-cols-1 gap-3">
+                            {EXPLORE_LINKS_UTAMA.map((link, idx) => {
+                                const LinkIcon = Icon[link.icon] || Icon.Globe;
+                                return (
+                                    <button 
+                                        key={idx}
+                                        onClick={() => handleLink(link.url)}
+                                        className="bg-white/90 backdrop-blur-md p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-md group text-left"
+                                    >
+                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${link.bgLight} ${link.textCol}`}>
+                                            <LinkIcon className="w-6 h-6" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="font-bold text-slate-800 text-sm group-hover:text-brand-600 transition-colors">{link.title}</h3>
+                                            <p className="text-[11px] text-slate-500 font-medium mt-0.5">{link.desc}</p>
+                                        </div>
+                                        <Icon.ChevronLeft className="w-5 h-5 rotate-180 text-slate-300 group-hover:text-brand-400 transition-colors" />
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Section 2: Portal Informasi */}
+                    <div>
+                        <div className="flex items-center gap-2 mb-3">
+                            <Icon.Info className="w-4 h-4 text-blue-500" />
+                            <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Portal Informasi</h2>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            {EXPLORE_LINKS_INFO.map((link, idx) => {
+                                const LinkIcon = Icon[link.icon] || Icon.Globe;
+                                return (
+                                    <button 
+                                        key={idx}
+                                        onClick={() => handleLink(link.url)}
+                                        className="bg-white/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-2 transition-all active:scale-[0.96] hover:shadow-md group text-left"
+                                    >
+                                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${link.bgLight} ${link.textCol}`}>
+                                            <LinkIcon className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-slate-800 text-xs leading-tight group-hover:text-brand-600 transition-colors">{link.title}</h3>
+                                            <p className="text-[9px] text-slate-400 font-medium mt-1 leading-tight line-clamp-2">{link.desc}</p>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
             );
         }
