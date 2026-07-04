@@ -545,9 +545,9 @@
                                     >
                                         {/* Lingkaran Luar (Background / Stroke Putih Besar) */}
                                         <div className={`w-[72px] h-[72px] bg-white rounded-full flex items-center justify-center shadow-[0_-5px_15px_rgba(0,0,0,0.05)] transition-transform duration-300 ${view === 'explore' ? 'scale-105' : 'group-hover:scale-105'}`}>
-                                            {/* Lingkaran Dalam Hitam */}
-                                            <div className="w-[62px] h-[62px] bg-[#2d2d2d] rounded-full flex flex-col items-center justify-center shadow-inner">
-                                                <span className="text-brand-yellow font-extrabold text-[12px] leading-[1.1] tracking-tight">mansix</span>
+                                            {/* Lingkaran Dalam Hitam/Slate-900 (Menyesuaikan Tema) */}
+                                            <div className="w-[62px] h-[62px] bg-slate-900 rounded-full flex flex-col items-center justify-center shadow-inner">
+                                                <span className="text-brand-500 font-extrabold text-[12px] leading-[1.1] tracking-tight">mansix</span>
                                                 <span className="text-white font-medium text-[10px] leading-[1.1] tracking-tight">explore</span>
                                             </div>
                                         </div>
@@ -584,8 +584,8 @@
                 <div className="flex-1 min-h-screen pt-8 px-5 pb-28 animate-fade-in relative z-10">
                     {/* Header Explore */}
                     <div className="text-center mb-6 relative">
-                        <div className="w-16 h-16 bg-[#2d2d2d] rounded-full flex flex-col items-center justify-center mx-auto mb-3 shadow-lg border-[3px] border-white">
-                            <span className="text-brand-yellow font-extrabold text-[14px] leading-tight">mansix</span>
+                        <div className="w-16 h-16 bg-slate-900 rounded-full flex flex-col items-center justify-center mx-auto mb-3 shadow-lg border-[3px] border-white">
+                            <span className="text-brand-500 font-extrabold text-[14px] leading-tight">mansix</span>
                             <span className="text-white font-medium text-[11px] leading-tight">explore</span>
                         </div>
                         <h1 className="text-2xl font-black text-slate-900 tracking-tight">Eksplorasi MAN 6</h1>
@@ -948,14 +948,14 @@
                 return text.split('\n').map((line, idx) => {
                     if (line.trim().startsWith('•')) {
                         return (
-                            <div key={idx} className="flex items-start gap-3 mt-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                                <div className="mt-0.5 w-6 h-6 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <div key={idx} className="flex items-start gap-3 mt-3 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="mt-0.5 w-6 h-6 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border border-brand-100">
                                     <Icon.CheckCircle className="w-3.5 h-3.5" />
                                 </div>
                                 <p className="text-slate-600 text-xs font-medium leading-relaxed flex-1">
                                     {line.includes(':') ? (
                                         <>
-                                            <span className="font-bold text-slate-800">{line.substring(1, line.indexOf(':') + 1)}</span>
+                                            <span className="font-bold text-slate-800 block mb-0.5 text-sm">{line.substring(1, line.indexOf(':') + 1)}</span>
                                             {line.substring(line.indexOf(':') + 1)}
                                         </>
                                     ) : (
@@ -965,70 +965,89 @@
                             </div>
                         );
                     } else if (line.trim().toLowerCase().includes('pilihan varian:')) {
-                        return <h4 key={idx} className="font-black text-slate-800 text-[11px] uppercase tracking-widest mt-6 mb-2 flex items-center gap-2"><Icon.Sparkles className="w-3.5 h-3.5 text-brand-500"/> {line}</h4>;
+                        return <h4 key={idx} className="font-black text-slate-800 text-[11px] uppercase tracking-widest mt-8 mb-3 flex items-center gap-2"><Icon.Sparkles className="w-4 h-4 text-brand-500"/> {line}</h4>;
                     } else if (line.trim() !== '') {
-                        return <p key={idx} className="text-slate-500 text-xs font-medium leading-relaxed mb-3 text-justify">{line}</p>;
+                        return <p key={idx} className="text-slate-500 text-sm font-medium leading-relaxed mb-3">{line}</p>;
                     }
                     return null;
                 });
             };
 
             return (
-                <div className="flex-1 flex flex-col bg-white relative z-20 min-h-screen animate-in slide-in-from-right duration-300">
+                <div className="flex-1 flex flex-col bg-slate-50 relative z-20 min-h-screen animate-in slide-in-from-right duration-300">
                     
-                    {/* BAGIAN FOTO PRODUK (FULL WIDTH - MELENGKUNG BAWAH SAJA) */}
-                    <div className="relative w-full h-[350px] rounded-b-[2.5rem] overflow-hidden bg-slate-100 shadow-sm">
+                    {/* BAGIAN FOTO PRODUK (OVERLAY GRADIENT ELEGANT) */}
+                    <div className="relative w-full h-[400px]">
                         <img src={product.image} className="w-full h-full object-cover" alt={product.name} />
                         
-                        {/* Tombol Back di Atas Gambar */}
-                        <button 
-                            onClick={onBack} 
-                            className="absolute top-6 left-5 w-10 h-10 bg-white/60 backdrop-blur-md text-slate-800 rounded-full flex items-center justify-center transition-all active:scale-90 shadow-sm"
-                        >
-                            <Icon.ChevronLeft className="w-6 h-6 pr-0.5" />
-                        </button>
-                    </div>
-
-                    {/* KONTEN DETAIL (Latar Putih Bersih di bawah gambar) */}
-                    <div className="px-6 pt-6 pb-32">
+                        {/* Gradient Overlay dari bawah ke atas */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent"></div>
                         
-                        {/* Badge Kategori & Rating */}
-                        <div className="flex items-center justify-between mb-3">
-                            <span className="text-[10px] font-black tracking-widest text-orange-500 bg-orange-50 px-3 py-1.5 rounded-full uppercase">
+                        {/* Top Navigation */}
+                        <div className="absolute top-0 left-0 right-0 p-5 flex justify-between items-center z-10">
+                            <button 
+                                onClick={onBack} 
+                                className="w-10 h-10 bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full flex items-center justify-center transition-all active:scale-90 shadow-lg"
+                            >
+                                <Icon.ChevronLeft className="w-6 h-6 pr-0.5" />
+                            </button>
+                            
+                            {/* Rating Floating Right */}
+                            <div className="bg-white/20 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-full flex items-center gap-1 text-white shadow-lg">
+                                <Icon.Star className="w-4 h-4 text-yellow-400" />
+                                <span className="text-sm font-bold">{product.rating}</span>
+                            </div>
+                        </div>
+
+                        {/* Title Over Image */}
+                        <div className="absolute bottom-10 left-6 right-6 z-10">
+                            <span className="inline-block px-3 py-1 mb-3 bg-brand-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg border border-brand-400">
                                 {product.category}
                             </span>
-                            <div className="flex items-center gap-1.5 text-sm text-slate-800 font-extrabold">
-                                <Icon.Star className="text-yellow-400 w-4 h-4" />
-                                <span>{product.rating}</span>
-                            </div>
+                            <h2 className="text-3xl font-black leading-tight text-white drop-shadow-md">{product.name}</h2>
                         </div>
+                    </div>
+
+                    {/* KONTEN DETAIL (Overlapping Panel) */}
+                    <div className="relative z-10 bg-white rounded-t-[32px] -mt-6 px-6 pt-8 pb-32 shadow-[0_-8px_20px_rgba(0,0,0,0.06)] flex-1">
                         
-                        {/* Judul & Harga */}
-                        <h2 className="text-3xl font-black leading-tight text-slate-900 mb-1">{product.name}</h2>
-                        <p className="text-2xl font-black text-brand-600 mb-6">{formatRupiah(activePrice)}</p>
-
-                        {/* Info Singkat */}
-                        <div className="flex gap-4 mb-8">
-                            <div className="flex-1 bg-white shadow-sm rounded-3xl p-4 flex flex-col items-center justify-center border border-slate-100">
-                                <Icon.Clock className="w-6 h-6 text-slate-400 mb-1" />
-                                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Waktu</span>
-                                <span className="text-sm font-bold text-slate-700">{product.prepTime}</span>
-                            </div>
-                            <div className="flex-1 bg-white shadow-sm rounded-3xl p-4 flex flex-col items-center justify-center border border-slate-100">
-                                <Icon.Flame className="w-6 h-6 text-orange-400 mb-1" />
-                                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Kalori</span>
-                                <span className="text-sm font-bold text-slate-700">{product.calories}</span>
+                        <div className="flex justify-between items-end mb-8">
+                            <div>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Harga Spesial</p>
+                                <p className="text-3xl font-black text-brand-600">{formatRupiah(activePrice)}</p>
                             </div>
                         </div>
 
-                        {/* Pilihan Varian Modern */}
+                        {/* Waktu & Kalori (Pill Style) */}
+                        <div className="flex gap-3 mb-8">
+                            <div className="flex-1 bg-slate-50 border border-slate-100 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm">
+                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-slate-400">
+                                    <Icon.Clock className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Durasi</span>
+                                    <span className="text-sm font-black text-slate-800 block">{product.prepTime}</span>
+                                </div>
+                            </div>
+                            <div className="flex-1 bg-slate-50 border border-slate-100 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm">
+                                <div className="w-10 h-10 bg-orange-50 rounded-full flex items-center justify-center shadow-sm text-orange-500">
+                                    <Icon.Flame className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Kalori</span>
+                                    <span className="text-sm font-black text-slate-800 block">{product.calories}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Pilihan Varian (Radio UI Modern) */}
                         {product.variants && (
                             <div className="mb-8">
                                 <div className="flex justify-between items-center mb-4">
-                                    <h3 className="font-black text-sm text-slate-800">Pilih Varian</h3>
-                                    <span className="text-[10px] bg-brand-100 text-brand-600 font-bold px-2 py-0.5 rounded-lg uppercase">Wajib</span>
+                                    <h3 className="font-black text-base text-slate-800">Pilihan Varian</h3>
+                                    <span className="text-[10px] bg-red-100 text-red-600 font-black px-2 py-1 rounded-lg uppercase tracking-wider">Wajib</span>
                                 </div>
-                                <div className="flex flex-col gap-3">
+                                <div className="grid grid-cols-1 gap-3">
                                     {product.variants.map(v => {
                                         const isSelected = v === detailVariant;
                                         let priceLabel = "";
@@ -1040,14 +1059,21 @@
                                             <button 
                                                 key={v}
                                                 onClick={() => setDetailVariant(v)}
-                                                className={`p-4 rounded-2xl text-sm font-bold border-2 text-left flex justify-between items-center transition ${
+                                                className={`relative overflow-hidden p-4 rounded-2xl text-left transition-all border-2 flex justify-between items-center ${
                                                     isSelected 
-                                                        ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-md shadow-brand-100' 
-                                                        : 'border-slate-100 bg-white text-slate-600 shadow-sm hover:border-slate-200'
+                                                        ? 'border-brand-500 bg-brand-50 shadow-[0_4px_15px_rgba(249,115,22,0.1)]' 
+                                                        : 'border-slate-100 bg-white hover:border-slate-200'
                                                 }`}
                                             >
-                                                <span>{v}</span>
-                                                {priceLabel && <span className={isSelected ? "text-brand-600" : "text-slate-400 font-semibold"}>{priceLabel}</span>}
+                                                <div className="flex-1">
+                                                    <span className={`text-sm font-black block ${isSelected ? 'text-brand-700' : 'text-slate-700'}`}>{v}</span>
+                                                    {priceLabel && <span className={`text-xs font-bold mt-0.5 block ${isSelected ? 'text-brand-500' : 'text-slate-400'}`}>{priceLabel}</span>}
+                                                </div>
+                                                
+                                                {/* Visual Radio Icon */}
+                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${isSelected ? 'border-brand-500' : 'border-slate-300'}`}>
+                                                    {isSelected && <div className="w-2.5 h-2.5 bg-brand-500 rounded-full animate-fade-in"></div>}
+                                                </div>
                                             </button>
                                         );
                                     })}
@@ -1055,11 +1081,11 @@
                             </div>
                         )}
 
-                        {/* Deskripsi Modern */}
+                        {/* Deskripsi */}
                         <div className="mb-8">
-                            <h3 className="font-black text-sm text-slate-800 mb-3 flex items-center gap-2 border-b border-dashed border-slate-200 pb-3">
-                                <Icon.Sparkles className="w-5 h-5 text-brand-500" />
-                                Tentang Produk Ini
+                            <h3 className="font-black text-base text-slate-800 mb-4 flex items-center gap-2 border-b border-dashed border-slate-200 pb-3">
+                                <Icon.Sparkles className="w-5 h-5 text-amber-400" />
+                                Deskripsi Produk
                             </h3>
                             <div className="pt-2">
                                 {formatDescription(product.description)}
@@ -1068,33 +1094,34 @@
 
                         {/* Catatan Khusus */}
                         <div className="mb-4">
-                            <h3 className="font-bold text-sm text-slate-800 mb-3">Catatan Tambahan <span className="text-slate-400 font-medium text-xs">(Opsional)</span></h3>
+                            <h3 className="font-black text-sm text-slate-800 mb-3">Catatan Tambahan <span className="text-slate-400 font-semibold text-xs ml-1">(Opsional)</span></h3>
                             <textarea 
                                 value={detailNotes}
                                 onChange={(e) => setDetailNotes(e.target.value)}
                                 rows="3" 
                                 placeholder="Contoh: Ekstra saus, jangan pakai bawang..."
-                                className="w-full bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white focus:outline-none rounded-2xl p-4 text-xs font-bold transition-all resize-none shadow-sm text-slate-800"
+                                className="w-full bg-slate-50 border border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-50 rounded-2xl p-4 text-sm font-medium transition-all resize-none shadow-inner outline-none text-slate-800"
                             ></textarea>
                         </div>
                     </div>
 
                     {/* BOTTOM BAR (Terapung, Rapi) */}
-                    <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white p-4 pb-5 border-t border-slate-100 flex items-center gap-3 z-30 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-                        <div className="flex items-center bg-slate-100 rounded-2xl p-1 h-14">
-                            <button onClick={() => setDetailQty(Math.max(1, detailQty - 1))} className="w-12 h-full flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
-                                <Icon.Minus className="w-5 h-5" />
+                    <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl p-4 pb-6 border-t border-slate-100 flex items-center gap-4 z-30 shadow-[0_-15px_40px_rgba(0,0,0,0.06)]">
+                        <div className="flex items-center bg-slate-50 border border-slate-200 rounded-2xl p-1 h-14 shadow-sm">
+                            <button onClick={() => setDetailQty(Math.max(1, detailQty - 1))} className="w-12 h-full flex items-center justify-center text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
+                                <Icon.Minus className="w-4 h-4" />
                             </button>
-                            <span className="text-sm font-black w-6 text-center text-slate-800">{detailQty}</span>
-                            <button onClick={() => setDetailQty(detailQty + 1)} className="w-12 h-full flex items-center justify-center text-brand-500 hover:text-brand-600 transition-colors">
-                                <Icon.Plus className="w-5 h-5" />
+                            <span className="text-base font-black w-6 text-center text-slate-800">{detailQty}</span>
+                            <button onClick={() => setDetailQty(detailQty + 1)} className="w-12 h-full flex items-center justify-center text-brand-500 hover:bg-brand-50 rounded-xl transition-colors">
+                                <Icon.Plus className="w-4 h-4" />
                             </button>
                         </div>
                         <button 
                             onClick={commitAddToCart}
-                            className="flex-1 bg-brand-500 hover:bg-brand-600 text-white h-14 rounded-2xl font-extrabold text-sm shadow-lg shadow-brand-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                            className="flex-1 bg-slate-900 hover:bg-black text-white h-14 rounded-2xl font-extrabold text-sm shadow-[0_8px_20px_rgba(15,23,42,0.3)] transition-all active:scale-[0.97] flex items-center justify-between px-5"
                         >
-                            Tambah - {formatRupiah(activePrice * detailQty)}
+                            <span>Tambah Ke Tas</span>
+                            <span className="bg-white/20 py-1 px-2.5 rounded-lg text-xs">{formatRupiah(activePrice * detailQty)}</span>
                         </button>
                     </div>
                 </div>
